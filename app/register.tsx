@@ -2,7 +2,7 @@ import React from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
-const TextInputExample = () => {
+const registerComponent = () => {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [errorMessage, setErrorMessage] = React.useState("");
@@ -65,7 +65,6 @@ const TextInputExample = () => {
 
           <Button onPress={register} title="Register" color="#1a8fe3" />
 
-          {/* ERROR MESSAGE BELOW BUTTON */}
           {errorMessage !== "" && (
             <Text style={styles.errorText}>{errorMessage}</Text>
           )}
@@ -97,4 +96,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default TextInputExample;
+export default registerComponent;
