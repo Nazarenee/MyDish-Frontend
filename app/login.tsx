@@ -1,8 +1,10 @@
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { router } from "expo-router";
 import React from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
 
-const loginComponent = () => {
+const LoginComponent = () => {
   const [username, setUsername] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [errorMessage, setErrorMessage] = React.useState("");
@@ -28,17 +30,32 @@ const loginComponent = () => {
       );
 
       const data = await response.json();
+
       if (!response.ok) {
-        let msg = "";
-
-        if (data.userName) msg += data.userName + "\n";
-        if (data.password) msg += data.password;
-
-        setErrorMessage(msg.trim());
+        if (data.message) {
+          setErrorMessage(data.message);
+        } else if (data.error) {
+          setErrorMessage(data.error);
+        } else {
+          setErrorMessage("Login failed. Please check your credentials.");
+        }
         return;
       }
-      setErrorMessage("");
+
+      if (data.token) {
+        await AsyncStorage.setItem("jwtToken", data.token);
+      }
+
+      if (data.userId || data.id) {
+        await AsyncStorage.setItem("userId", String(data.userId || data.id));
+      }
+      if (data.username || username) {
+        await AsyncStorage.setItem("username", data.username || username);
+      }
+
       setSuccessMessage("Logged in successfully!");
+
+      router.replace("/overview");
     } catch (error) {
       setErrorMessage("Network error. Try again later.");
     }
@@ -96,4 +113,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default loginComponent;
+export default LoginComponent;
