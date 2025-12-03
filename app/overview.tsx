@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
@@ -30,6 +30,7 @@ interface Recipe {
   likeCount: number;
   commentCount: number;
   images: RecipeImage[];
+  stepByStepGuide?: string[];
 }
 
 interface Ingredient {
@@ -53,6 +54,7 @@ const OverviewComponent = () => {
     { name: "", amount: "", unit: "GRAM", averageCookingTime: "" },
   ]);
   const [imageUrls, setImageUrls] = useState<string[]>([""]);
+  const [steps, setSteps] = useState<string[]>([""]);
 
   const fetchRecipes = async () => {
     try {
@@ -154,6 +156,21 @@ const OverviewComponent = () => {
     setImageUrls(newImageUrls);
   };
 
+  const addStep = () => {
+    setSteps([...steps, ""]);
+  };
+
+  const removeStep = (index: number) => {
+    const newSteps = steps.filter((_, i) => i !== index);
+    setSteps(newSteps);
+  };
+
+  const updateStep = (index: number, value: string) => {
+    const newSteps = [...steps];
+    newSteps[index] = value;
+    setSteps(newSteps);
+  };
+
   const resetForm = () => {
     setRecipeName("");
     setRecipeDescription("");
@@ -162,6 +179,7 @@ const OverviewComponent = () => {
       { name: "", amount: "", unit: "GRAM", averageCookingTime: "" },
     ]);
     setImageUrls([""]);
+    setSteps([""]);
   };
 
   const handleCreateRecipe = async () => {
@@ -211,6 +229,8 @@ const OverviewComponent = () => {
         .filter((url) => url.trim())
         .map((url) => ({ imageUrl: url.trim() }));
 
+      const validSteps = steps.filter((step) => step.trim());
+
       const recipeData = {
         name: recipeName,
         description: recipeDescription,
@@ -218,6 +238,7 @@ const OverviewComponent = () => {
         authorId: parseInt(userId),
         ingredients: ingredientsData,
         images: validImageUrls,
+        stepByStepGuide: validSteps,
       };
 
       const response = await fetch(
@@ -268,6 +289,11 @@ const OverviewComponent = () => {
             {item.name}
           </Text>
           <Text style={styles.cardAuthor}>by {item.authorName}</Text>
+          {item.stepByStepGuide && item.stepByStepGuide.length > 0 && (
+            <Text style={styles.cardStepCount}>
+              📝 {item.stepByStepGuide.length} steps
+            </Text>
+          )}
           <View style={styles.cardStats}>
             <Text style={styles.cardStatText}>❤️ {item.likeCount}</Text>
             <Text style={styles.cardStatText}>💬 {item.commentCount}</Text>
@@ -480,6 +506,41 @@ const OverviewComponent = () => {
                 onPress={addIngredient}
               >
                 <Text style={styles.buttonText}>+ Add Ingredient</Text>
+              </TouchableOpacity>
+
+              <Text style={styles.sectionTitle}>Step-by-Step Guide (Optional)</Text>
+
+              {steps.map((step, index) => (
+                <View key={index} style={styles.ingredientRow}>
+                  <View style={styles.ingredientInputs}>
+                    <Text style={styles.stepNumber}>Step {index + 1}</Text>
+                    <TextInput
+                      style={[styles.input, styles.textarea]}
+                      value={step}
+                      onChangeText={(text) => updateStep(index, text)}
+                      placeholder="Describe this step..."
+                      placeholderTextColor="#999"
+                      multiline
+                      numberOfLines={3}
+                    />
+                  </View>
+
+                  {steps.length > 1 && (
+                    <TouchableOpacity
+                      style={styles.buttonRemove}
+                      onPress={() => removeStep(index)}
+                    >
+                      <Text style={styles.buttonRemoveText}>−</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              ))}
+
+              <TouchableOpacity
+                style={styles.buttonSecondary}
+                onPress={addStep}
+              >
+                <Text style={styles.buttonText}>+ Add Step</Text>
               </TouchableOpacity>
 
               <Text style={styles.sectionTitle}>Images (Optional)</Text>

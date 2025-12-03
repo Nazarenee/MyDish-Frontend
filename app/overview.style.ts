@@ -1,7 +1,6 @@
 import { StyleSheet } from "react-native";
 
 export default StyleSheet.create({
-  /* Layout */
   container: {
     flex: 1,
     backgroundColor: "#f5f5f5",
@@ -72,7 +71,17 @@ export default StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: "#333",
-  },
+  },stepNumber: {
+  fontSize: 14,
+  fontWeight: '600',
+  color: '#333',
+  marginBottom: 8,
+},
+cardStepCount: {
+  fontSize: 12,
+  color: '#666',
+  marginTop: 4,
+},
   button: {
     backgroundColor: "#1a8fe3",
     padding: 10,
@@ -171,7 +180,6 @@ export default StyleSheet.create({
     color: "#666",
     textAlign: "center",
   },
-
   modalOverlay: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.5)",
@@ -215,7 +223,6 @@ export default StyleSheet.create({
     borderTopColor: "#e0e0e0",
     gap: 12,
   },
-
   label: {
     fontSize: 14,
     fontWeight: "600",
@@ -236,8 +243,6 @@ export default StyleSheet.create({
     height: 100,
     textAlignVertical: "top",
   },
-
-  /* Checkbox */
   checkboxContainer: {
     marginVertical: 16,
   },

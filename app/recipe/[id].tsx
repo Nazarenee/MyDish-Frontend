@@ -1,6 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useLocalSearchParams } from "expo-router";
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Image,
@@ -38,6 +38,7 @@ interface RecipeDetail {
   likedByCurrentUser: boolean;
   images: RecipeImage[];
   enableComments: boolean;
+  stepByStepGuide?: string[];
 }
 
 const RecipeDetailPage = () => {
@@ -150,6 +151,14 @@ const RecipeDetailPage = () => {
               <Text style={styles.statValue}>💬 {recipe.commentCount}</Text>
               <Text style={styles.statLabel}>Comments</Text>
             </View>
+            {recipe.stepByStepGuide && recipe.stepByStepGuide.length > 0 && (
+              <View style={styles.statItem}>
+                <Text style={styles.statValue}>
+                  📝 {recipe.stepByStepGuide.length}
+                </Text>
+                <Text style={styles.statLabel}>Steps</Text>
+              </View>
+            )}
           </View>
 
           <View style={styles.section}>
@@ -176,6 +185,23 @@ const RecipeDetailPage = () => {
               </View>
             ))}
           </View>
+
+          {recipe.stepByStepGuide && recipe.stepByStepGuide.length > 0 && (
+            <View style={styles.section}>
+              <Text style={styles.sectionTitle}>Step-by-Step Instructions</Text>
+              {recipe.stepByStepGuide.map((step, index) => (
+                <View key={index} style={styles.stepContainer}>
+                  <View style={styles.stepNumberCircle}>
+                    <Text style={styles.stepNumberText}>{index + 1}</Text>
+                  </View>
+                  <View style={styles.stepContentContainer}>
+                    <Text style={styles.stepTitle}>Step {index + 1}</Text>
+                    <Text style={styles.stepText}>{step}</Text>
+                  </View>
+                </View>
+              ))}
+            </View>
+          )}
 
           {recipe.images.length > 1 && (
             <View style={styles.section}>
@@ -300,6 +326,47 @@ const styles = StyleSheet.create({
     fontSize: 16,
     color: "#333",
     flex: 1,
+  },
+  stepContainer: {
+    flexDirection: "row",
+    marginBottom: 20,
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  stepNumberCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#1a8fe3",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 16,
+    flexShrink: 0,
+  },
+  stepNumberText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  stepContentContainer: {
+    flex: 1,
+  },
+  stepTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 6,
+  },
+  stepText: {
+    fontSize: 15,
+    color: "#666",
+    lineHeight: 22,
   },
   thumbnailImage: {
     width: 120,
