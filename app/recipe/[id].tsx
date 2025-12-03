@@ -151,14 +151,6 @@ const RecipeDetailPage = () => {
               <Text style={styles.statValue}>💬 {recipe.commentCount}</Text>
               <Text style={styles.statLabel}>Comments</Text>
             </View>
-            {recipe.stepByStepGuide && recipe.stepByStepGuide.length > 0 && (
-              <View style={styles.statItem}>
-                <Text style={styles.statValue}>
-                  📝 {recipe.stepByStepGuide.length}
-                </Text>
-                <Text style={styles.statLabel}>Steps</Text>
-              </View>
-            )}
           </View>
 
           <View style={styles.section}>

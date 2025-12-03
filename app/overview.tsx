@@ -289,11 +289,6 @@ const OverviewComponent = () => {
             {item.name}
           </Text>
           <Text style={styles.cardAuthor}>by {item.authorName}</Text>
-          {item.stepByStepGuide && item.stepByStepGuide.length > 0 && (
-            <Text style={styles.cardStepCount}>
-              📝 {item.stepByStepGuide.length} steps
-            </Text>
-          )}
           <View style={styles.cardStats}>
             <Text style={styles.cardStatText}>❤️ {item.likeCount}</Text>
             <Text style={styles.cardStatText}>💬 {item.commentCount}</Text>
