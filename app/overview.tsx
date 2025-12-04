@@ -15,11 +15,19 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
-import styles from "./overview.style";
+import styles from "./css/overview.style";
 
 interface RecipeImage {
   id: number;
   imageUrl: string;
+}
+
+interface Comment {
+  id: number;
+  bodyText: string;
+  userName: string;
+  userId: number;
+  created: string;
 }
 
 interface Recipe {
@@ -29,6 +37,7 @@ interface Recipe {
   authorName: string;
   likeCount: number;
   commentCount: number;
+  likedByCurrentUser: boolean;
   images: RecipeImage[];
   stepByStepGuide?: string[];
 }
@@ -55,6 +64,13 @@ const OverviewComponent = () => {
   ]);
   const [imageUrls, setImageUrls] = useState<string[]>([""]);
   const [steps, setSteps] = useState<string[]>([""]);
+
+  const [commentsModalVisible, setCommentsModalVisible] = useState(false);
+  const [selectedRecipeId, setSelectedRecipeId] = useState<number | null>(null);
+  const [comments, setComments] = useState<Comment[]>([]);
+  const [loadingComments, setLoadingComments] = useState(false);
+  const [newComment, setNewComment] = useState("");
+  const [postingComment, setPostingComment] = useState(false);
 
   const fetchRecipes = async () => {
     try {
@@ -97,6 +113,169 @@ const OverviewComponent = () => {
       setLoading(false);
       setRefreshing(false);
     }
+  };
+
+  const fetchComments = async (recipeId: number) => {
+    setLoadingComments(true);
+    try {
+      const token = await AsyncStorage.getItem("jwtToken");
+
+      if (!token) {
+        Alert.alert("Error", "No token found. Please log in.");
+        return;
+      }
+
+      const response = await fetch(
+        `https://hovedopgave-mydish-production.up.railway.app/api/comments/recipe/${recipeId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch comments");
+      }
+
+      const data = await response.json();
+      setComments(data);
+    } catch (err) {
+      console.error("Error fetching comments:", err);
+      Alert.alert("Error", "Failed to load comments");
+    } finally {
+      setLoadingComments(false);
+    }
+  };
+
+  const handleLikeToggle = async (recipeId: number) => {
+    try {
+      const token = await AsyncStorage.getItem("jwtToken");
+      const userId = await AsyncStorage.getItem("userId");
+
+      if (!token || !userId) {
+        Alert.alert("Error", "Please log in.");
+        return;
+      }
+
+      const recipe = recipes.find((r) => r.id === recipeId);
+      if (!recipe) return;
+
+      if (recipe.likedByCurrentUser) {
+        const response = await fetch(
+          `https://hovedopgave-mydish-production.up.railway.app/api/likes/recipe/${recipeId}/user/${userId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.ok) {
+          setRecipes((prev) =>
+            prev.map((r) =>
+              r.id === recipeId
+                ? {
+                    ...r,
+                    likeCount: r.likeCount - 1,
+                    likedByCurrentUser: false,
+                  }
+                : r
+            )
+          );
+        }
+      } else {
+        const response = await fetch(
+          "https://hovedopgave-mydish-production.up.railway.app/api/likes",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              recipeId: recipeId,
+              userId: parseInt(userId),
+            }),
+          }
+        );
+
+        if (response.ok) {
+          setRecipes((prev) =>
+            prev.map((r) =>
+              r.id === recipeId
+                ? {
+                    ...r,
+                    likeCount: r.likeCount + 1,
+                    likedByCurrentUser: true,
+                  }
+                : r
+            )
+          );
+        }
+      }
+    } catch (err) {
+      console.error("Error toggling like:", err);
+      Alert.alert("Error", "Failed to update like");
+    }
+  };
+
+  const handlePostComment = async () => {
+    if (!newComment.trim() || !selectedRecipeId) return;
+
+    setPostingComment(true);
+    try {
+      const token = await AsyncStorage.getItem("jwtToken");
+      const userId = await AsyncStorage.getItem("userId");
+
+      if (!token || !userId) {
+        Alert.alert("Error", "Please log in.");
+        return;
+      }
+
+      const response = await fetch(
+        "https://hovedopgave-mydish-production.up.railway.app/api/comments",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            bodyText: newComment,
+            recipeId: selectedRecipeId,
+            userId: parseInt(userId),
+          }),
+        }
+      );
+
+      if (response.ok) {
+        setNewComment("");
+        fetchComments(selectedRecipeId);
+        setRecipes((prev) =>
+          prev.map((r) =>
+            r.id === selectedRecipeId
+              ? { ...r, commentCount: r.commentCount + 1 }
+              : r
+          )
+        );
+      }
+    } catch (err) {
+      console.error("Error posting comment:", err);
+      Alert.alert("Error", "Failed to post comment");
+    } finally {
+      setPostingComment(false);
+    }
+  };
+
+  const openCommentsModal = (recipeId: number) => {
+    setSelectedRecipeId(recipeId);
+    setCommentsModalVisible(true);
+    fetchComments(recipeId);
   };
 
   useEffect(() => {
@@ -278,23 +457,52 @@ const OverviewComponent = () => {
         : "https://via.placeholder.com/300x200?text=No+Image";
 
     return (
-      <TouchableOpacity
-        style={styles.card}
-        onPress={() => handleRecipePress(item.id)}
-        activeOpacity={0.7}
-      >
-        <Image source={{ uri: imageUrl }} style={styles.cardImage} />
-        <View style={styles.cardContent}>
-          <Text style={styles.cardTitle} numberOfLines={2}>
-            {item.name}
-          </Text>
-          <Text style={styles.cardAuthor}>by {item.authorName}</Text>
-          <View style={styles.cardStats}>
-            <Text style={styles.cardStatText}>❤️ {item.likeCount}</Text>
-            <Text style={styles.cardStatText}>💬 {item.commentCount}</Text>
+      <View style={styles.card}>
+        <TouchableOpacity
+          onPress={() => handleRecipePress(item.id)}
+          activeOpacity={0.7}
+        >
+          <Image source={{ uri: imageUrl }} style={styles.cardImage} />
+          <View style={styles.cardContent}>
+            <Text style={styles.cardTitle} numberOfLines={2}>
+              {item.name}
+            </Text>
+            <Text style={styles.cardAuthor}>by {item.authorName}</Text>
+          </View>
+        </TouchableOpacity>
+
+        <View style={styles.interactionSection}>
+          <View style={styles.statsRow}>
+            <Text style={styles.statsText}>{item.likeCount} likes</Text>
+            <TouchableOpacity onPress={() => openCommentsModal(item.id)}>
+              <Text style={styles.statsText}>{item.commentCount} comments</Text>
+            </TouchableOpacity>
+          </View>
+
+          <View style={styles.actionButtons}>
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => handleLikeToggle(item.id)}
+            >
+              <Text
+                style={[
+                  styles.actionButtonText,
+                  item.likedByCurrentUser && styles.actionButtonTextActive,
+                ]}
+              >
+                {item.likedByCurrentUser ? "❤️" : "🤍"} Like
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.actionButton}
+              onPress={() => openCommentsModal(item.id)}
+            >
+              <Text style={styles.actionButtonText}>💬 Comment</Text>
+            </TouchableOpacity>
           </View>
         </View>
-      </TouchableOpacity>
+      </View>
     );
   };
 
@@ -386,6 +594,87 @@ const OverviewComponent = () => {
           )}
         </View>
       </View>
+
+      <Modal
+        visible={commentsModalVisible}
+        animationType="slide"
+        transparent={true}
+        onRequestClose={() => setCommentsModalVisible(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Comments</Text>
+              <TouchableOpacity
+                onPress={() => setCommentsModalVisible(false)}
+                style={styles.modalClose}
+              >
+                <Text style={styles.modalCloseText}>✕</Text>
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.commentsContainer}>
+              {loadingComments ? (
+                <ActivityIndicator size="large" color="#1a8fe3" />
+              ) : comments.length === 0 ? (
+                <Text style={styles.noCommentsText}>
+                  No comments yet. Be the first to comment!
+                </Text>
+              ) : (
+                comments.map((comment) => (
+                  <View key={comment.id} style={styles.commentItem}>
+                    <View style={styles.commentHeader}>
+                      <View style={styles.profilePicture}>
+                        <Text style={styles.profileInitial}>
+                          {comment.userName.charAt(0).toUpperCase()}
+                        </Text>
+                      </View>
+                      <View style={styles.commentContent}>
+                        <Text style={styles.commentUserName}>
+                          {comment.userName}
+                        </Text>
+                        <Text style={styles.commentText}>
+                          {comment.bodyText}
+                        </Text>
+                        <Text style={styles.commentDate}>
+                          {new Date(comment.created).toLocaleDateString()}
+                        </Text>
+                      </View>
+                    </View>
+                  </View>
+                ))
+              )}
+            </ScrollView>
+
+            <View style={styles.commentInputContainer}>
+              <TextInput
+                style={styles.commentInput}
+                value={newComment}
+                onChangeText={setNewComment}
+                placeholder="Write a comment..."
+                placeholderTextColor="#999"
+                multiline
+              />
+              <TouchableOpacity
+                style={[
+                  styles.sendButton,
+                  (!newComment.trim() || postingComment) &&
+                    styles.sendButtonDisabled,
+                ]}
+                onPress={handlePostComment}
+                disabled={!newComment.trim() || postingComment}
+              >
+                {postingComment ? (
+                  <ActivityIndicator color="#fff" size="small" />
+                ) : (
+                  <Text style={styles.sendButtonText}>Send</Text>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       <Modal
         visible={modalVisible}
         animationType="slide"
@@ -503,7 +792,9 @@ const OverviewComponent = () => {
                 <Text style={styles.buttonText}>+ Add Ingredient</Text>
               </TouchableOpacity>
 
-              <Text style={styles.sectionTitle}>Step-by-Step Guide (Optional)</Text>
+              <Text style={styles.sectionTitle}>
+                Step-by-Step Guide (Optional)
+              </Text>
 
               {steps.map((step, index) => (
                 <View key={index} style={styles.ingredientRow}>

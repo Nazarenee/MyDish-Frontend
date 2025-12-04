@@ -1,0 +1,193 @@
+import { StyleSheet } from "react-native";
+
+export default StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+  },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  header: {
+    padding: 16,
+    backgroundColor: "#fff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
+  },
+  backButtonHeader: {
+    padding: 8,
+  },
+  backArrow: {
+    fontSize: 16,
+    color: "#1a8fe3",
+    fontWeight: "600",
+  },
+  mainImage: {
+    width: "100%",
+    height: 300,
+    backgroundColor: "#e0e0e0",
+  },
+  content: {
+    padding: 16,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 8,
+  },
+  author: {
+    fontSize: 16,
+    color: "#666",
+    marginBottom: 16,
+  },
+  statsContainer: {
+    flexDirection: "row",
+    justifyContent: "space-around",
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 2,
+  },
+  statItem: {
+    alignItems: "center",
+  },
+  statValue: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    color: "#999",
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 12,
+  },
+  description: {
+    fontSize: 16,
+    color: "#666",
+    lineHeight: 24,
+  },
+  ingredientItem: {
+    flexDirection: "row",
+    marginBottom: 8,
+    paddingLeft: 8,
+  },
+  ingredientBullet: {
+    fontSize: 16,
+    color: "#1a8fe3",
+    marginRight: 8,
+    fontWeight: "bold",
+  },
+  ingredientText: {
+    fontSize: 16,
+    color: "#333",
+    flex: 1,
+  },
+  stepContainer: {
+    flexDirection: "row",
+    marginBottom: 20,
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 12,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  stepNumberCircle: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#1a8fe3",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 16,
+    flexShrink: 0,
+  },
+  stepNumberText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  stepContentContainer: {
+    flex: 1,
+  },
+  stepTitle: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 6,
+  },
+  stepText: {
+    fontSize: 15,
+    color: "#666",
+    lineHeight: 22,
+  },
+  thumbnailImage: {
+    width: 120,
+    height: 120,
+    borderRadius: 8,
+    marginRight: 12,
+    backgroundColor: "#e0e0e0",
+  },
+  dateText: {
+    fontSize: 14,
+    color: "#999",
+    textAlign: "center",
+    marginTop: 16,
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#666",
+  },
+  errorText: {
+    fontSize: 16,
+    color: "red",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  backButton: {
+    backgroundColor: "#1a8fe3",
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  backButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  deleteButton: {
+    backgroundColor: "#dc3545",
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    marginTop: 24,
+    marginBottom: 16,
+    alignItems: "center",
+  },
+  deleteButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+});

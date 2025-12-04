@@ -1,0 +1,166 @@
+import { StyleSheet } from "react-native";
+export default StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+  },
+  centered: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
+  },
+  header: {
+    padding: 16,
+    backgroundColor: "#fff",
+    borderBottomWidth: 1,
+    borderBottomColor: "#e0e0e0",
+  },
+  backButtonHeader: {
+    padding: 8,
+  },
+  backArrow: {
+    fontSize: 16,
+    color: "#1a8fe3",
+    fontWeight: "600",
+  },
+  content: {
+    padding: 16,
+  },
+  titleSection: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 12,
+    marginBottom: 24,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  menuIcon: {
+    fontSize: 48,
+    marginRight: 16,
+  },
+  titleContent: {
+    flex: 1,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 4,
+  },
+  recipeCount: {
+    fontSize: 16,
+    color: "#1a8fe3",
+    fontWeight: "600",
+  },
+  section: {
+    marginBottom: 24,
+  },
+  sectionTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 12,
+  },
+  description: {
+    fontSize: 16,
+    color: "#666",
+    lineHeight: 24,
+    backgroundColor: "#fff",
+    padding: 16,
+    borderRadius: 8,
+  },
+  recipeCard: {
+    flexDirection: "row",
+    backgroundColor: "#fff",
+    borderRadius: 12,
+    marginBottom: 12,
+    overflow: "hidden",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  recipeImage: {
+    width: 120,
+    height: 120,
+    backgroundColor: "#e0e0e0",
+  },
+  recipeInfo: {
+    flex: 1,
+    padding: 12,
+    justifyContent: "space-between",
+  },
+  recipeName: {
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 4,
+  },
+  recipeAuthor: {
+    fontSize: 14,
+    color: "#666",
+    marginBottom: 8,
+  },
+  recipeStats: {
+    flexDirection: "row",
+    gap: 16,
+  },
+  statText: {
+    fontSize: 14,
+    color: "#999",
+  },
+  emptyState: {
+    backgroundColor: "#fff",
+    padding: 40,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  emptyText: {
+    fontSize: 16,
+    color: "#999",
+    textAlign: "center",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#666",
+  },
+  errorText: {
+    fontSize: 16,
+    color: "red",
+    textAlign: "center",
+    marginBottom: 20,
+  },
+  backButton: {
+    backgroundColor: "#1a8fe3",
+    paddingHorizontal: 24,
+    paddingVertical: 12,
+    borderRadius: 8,
+  },
+  backButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  deleteButton: {
+    backgroundColor: "#dc3545",
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    marginTop: 24,
+    marginBottom: 16,
+    alignItems: "center",
+  },
+  deleteButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+});

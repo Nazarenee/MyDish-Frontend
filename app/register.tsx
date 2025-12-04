@@ -1,6 +1,7 @@
 import React from "react";
-import { Button, StyleSheet, Text, TextInput, View } from "react-native";
+import { Button, Text, TextInput, View } from "react-native";
 import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import styles from "./css/register.style";
 
 const registerComponent = () => {
   const [username, setUsername] = React.useState("");
@@ -76,24 +77,5 @@ const registerComponent = () => {
     </SafeAreaProvider>
   );
 };
-
-const styles = StyleSheet.create({
-  input: {
-    height: 40,
-    margin: 12,
-    borderWidth: 1,
-    padding: 10,
-  },
-  errorText: {
-    marginTop: 10,
-    color: "red",
-    fontSize: 14,
-  },
-  successText: {
-    marginTop: 10,
-    color: "green",
-    fontSize: 14,
-  },
-});
 
 export default registerComponent;

@@ -71,17 +71,18 @@ export default StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     color: "#333",
-  },stepNumber: {
-  fontSize: 14,
-  fontWeight: '600',
-  color: '#333',
-  marginBottom: 8,
-},
-cardStepCount: {
-  fontSize: 12,
-  color: '#666',
-  marginTop: 4,
-},
+  },
+  stepNumber: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 8,
+  },
+  cardStepCount: {
+    fontSize: 12,
+    color: "#666",
+    marginTop: 4,
+  },
   button: {
     backgroundColor: "#1a8fe3",
     padding: 10,
@@ -275,5 +276,124 @@ cardStepCount: {
   ingredientInputs: {
     flex: 1,
     gap: 8,
+  },
+  interactionSection: {
+    borderTopWidth: 1,
+    borderTopColor: "#e0e0e0",
+    paddingTop: 12,
+  },
+  statsRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    paddingHorizontal: 16,
+    marginBottom: 8,
+  },
+  statsText: {
+    fontSize: 13,
+    color: "#666",
+  },
+  actionButtons: {
+    flexDirection: "row",
+    borderTopWidth: 1,
+    borderTopColor: "#e0e0e0",
+    paddingTop: 8,
+  },
+  actionButton: {
+    flex: 1,
+    alignItems: "center",
+    paddingVertical: 8,
+  },
+  actionButtonText: {
+    fontSize: 14,
+    color: "#666",
+    fontWeight: "600",
+  },
+  actionButtonTextActive: {
+    color: "#e74c3c",
+  },
+  commentsContainer: {
+    maxHeight: 400,
+    paddingHorizontal: 16,
+  },
+  noCommentsText: {
+    textAlign: "center",
+    color: "#999",
+    marginTop: 20,
+    fontStyle: "italic",
+  },
+  commentItem: {
+    marginBottom: 16,
+    paddingBottom: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: "#f0f0f0",
+  },
+  commentHeader: {
+    flexDirection: "row",
+  },
+  profilePicture: {
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    backgroundColor: "#1a8fe3",
+    justifyContent: "center",
+    alignItems: "center",
+    marginRight: 12,
+  },
+  profileInitial: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  commentContent: {
+    flex: 1,
+  },
+  commentUserName: {
+    fontWeight: "600",
+    fontSize: 14,
+    color: "#333",
+    marginBottom: 4,
+  },
+  commentText: {
+    fontSize: 14,
+    color: "#333",
+    marginBottom: 4,
+  },
+  commentDate: {
+    fontSize: 12,
+    color: "#999",
+  },
+  commentInputContainer: {
+    flexDirection: "row",
+    padding: 16,
+    borderTopWidth: 1,
+    borderTopColor: "#e0e0e0",
+    alignItems: "center",
+    gap: 8,
+  },
+  commentInput: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+    borderRadius: 20,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    maxHeight: 100,
+    fontSize: 14,
+  },
+  sendButton: {
+    backgroundColor: "#1a8fe3",
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+    justifyContent: "center",
+    alignItems: "center",
+    minWidth: 60,
+  },
+  sendButtonDisabled: {
+    backgroundColor: "#ccc",
+  },
+  sendButtonText: {
+    color: "#fff",
+    fontWeight: "600",
+    fontSize: 14,
   },
 });
