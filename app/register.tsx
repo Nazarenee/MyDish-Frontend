@@ -10,40 +10,64 @@ const registerComponent = () => {
   const [successMessage, setSuccessMessage] = React.useState("");
 
   async function register() {
-    setErrorMessage("");
-    setSuccessMessage("");
-    try {
-      const response = await fetch(
-        "https://hovedopgave-mydish-production.up.railway.app/api/auth/register",
-        {
-          method: "POST",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            username: username,
-            password: password,
-          }),
-        }
-      );
+  setErrorMessage("");
+  setSuccessMessage("");
+  try {
+    const response = await fetch(
+      "https://hovedopgave-mydish-production.up.railway.app/api/users/register",
+      {
+        method: "POST",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          username: username,
+          password: password,
+        }),
+      }
+    );
 
-      const data = await response.json();
-      if (!response.ok) {
-        let msg = "";
-
-        if (data.userName) msg += data.userName + "\n";
-        if (data.password) msg += data.password;
-
-        setErrorMessage(msg.trim());
+    if (!response.ok) {
+      let errorMsg = "Registration failed. Please try again.";
+      
+      if (response.status === 409) {
+        errorMsg = "Username already exists. Please choose a different username.";
+        setErrorMessage(errorMsg);
         return;
       }
-      setErrorMessage("");
-      setSuccessMessage("User registered!");
-    } catch (error) {
-      setErrorMessage("Network error. Try again later.");
+      
+      try {
+        const data = await response.json();
+        
+        if (data.userName || data.password || data.username) {
+          let msg = "";
+          if (data.userName) msg += data.userName + "\n";
+          if (data.username) msg += data.username + "\n";
+          if (data.password) msg += data.password;
+          errorMsg = msg.trim();
+        } 
+        else if (data.message) {
+          errorMsg = data.message;
+        } else if (data.error) {
+          errorMsg = data.error;
+        }
+      } catch (parseError) {
+        errorMsg = `Error: ${response.statusText}`;
+      }
+      
+      setErrorMessage(errorMsg);
+      return;
     }
+    
+    const data = await response.json();
+    setErrorMessage("");
+    setSuccessMessage("User registered successfully!");
+  } catch (error) {
+    console.error("Registration error:", error);
+    setErrorMessage("Network error. Please try again later.");
   }
+}
 
   return (
     <SafeAreaProvider>

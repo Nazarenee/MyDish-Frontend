@@ -5,7 +5,7 @@ import { Text, TouchableOpacity, View } from "react-native";
 import styles from "../css/Sidebar.style";
 
 interface SidebarProps {
-  activePage: "menu" | "recipes";
+  activePage: "menu" | "recipes" | "profile";
 }
 
 const Sidebar: React.FC<SidebarProps> = ({ activePage }) => {
@@ -31,6 +31,7 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage }) => {
       >
         <Text style={styles.sidebarText}>Menus</Text>
       </TouchableOpacity>
+      
 
       <TouchableOpacity
         style={[
@@ -40,6 +41,16 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage }) => {
         onPress={() => router.push("/recipeOverview")}
       >
         <Text style={styles.sidebarText}>Recipes</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity
+        style={[
+          styles.sidebarItem,
+          activePage === "profile" && styles.sidebarItemActive,
+        ]}
+        onPress={() => router.push("/profile")}
+      >
+        <Text style={styles.sidebarText}>Profile</Text>
       </TouchableOpacity>
 
       <View style={styles.sidebarSpacer} />

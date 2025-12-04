@@ -17,7 +17,7 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import Sidebar from "./components/Sidebar";
-import styles from "./css/overview.style";
+import styles from "./css/recipeoverview.style";
 interface RecipeImage {
   id: number;
   imageUrl: string;
@@ -28,6 +28,7 @@ interface Comment {
   bodyText: string;
   userName: string;
   userId: number;
+  userProfileImage: string;
   created: string;
   likeCount: number;
   likedByCurrentUser: boolean;
@@ -736,50 +737,51 @@ const OverviewComponent = () => {
             </View>
 
             <ScrollView style={styles.commentsContainer}>
-              {loadingComments ? (
-                <ActivityIndicator size="large" color="#1a8fe3" />
-              ) : (
-                comments.map((comment) => (
-                  <View key={comment.id} style={styles.commentItem}>
-                    <View style={styles.commentHeader}>
-                      <View style={styles.profilePicture}>
-                        <Text style={styles.profileInitial}>
-                          {comment.userName.charAt(0).toUpperCase()}
-                        </Text>
-                      </View>
-                      <View style={styles.commentContent}>
-                        <Text style={styles.commentUserName}>
-                          {comment.userName}
-                        </Text>
-                        <Text style={styles.commentText}>
-                          {comment.bodyText}
-                        </Text>
-                        <View style={styles.commentFooter}>
-                          <Text style={styles.commentDate}>
-                            {new Date(comment.created).toLocaleDateString()}
-                          </Text>
-                          <TouchableOpacity
-                            style={styles.commentLikeButton}
-                            onPress={() => handleCommentLikeToggle(comment.id)}
-                          >
-                            <Text
-                              style={[
-                                styles.commentLikeText,
-                                comment.likedByCurrentUser &&
-                                styles.commentLikeTextActive,
-                              ]}
-                            >
-                              {comment.likedByCurrentUser ? "❤️" : "🤍"}{" "}
-                              {comment.likeCount}
-                            </Text>
-                          </TouchableOpacity>
-                        </View>
-                      </View>
-                    </View>
-                  </View>
-                ))
-              )}
-            </ScrollView>
+  {loadingComments ? (
+    <ActivityIndicator size="large" color="#1a8fe3" />
+  ) : (
+    comments.map((comment) => (
+      <View key={comment.id} style={styles.commentItem}>
+        <View style={styles.commentHeader}>
+          <View style={styles.profilePicture}>
+            <Image 
+              source={{ uri: comment.userProfileImage }} 
+              style={styles.profileImage}
+            />
+          </View>
+          <View style={styles.commentContent}>
+            <Text style={styles.commentUserName}>
+              {comment.userName}
+            </Text>
+            <Text style={styles.commentText}>
+              {comment.bodyText}
+            </Text>
+            <View style={styles.commentFooter}>
+              <Text style={styles.commentDate}>
+                {new Date(comment.created).toLocaleDateString()}
+              </Text>
+              <TouchableOpacity
+                style={styles.commentLikeButton}
+                onPress={() => handleCommentLikeToggle(comment.id)}
+              >
+                <Text
+                  style={[
+                    styles.commentLikeText,
+                    comment.likedByCurrentUser &&
+                    styles.commentLikeTextActive,
+                  ]}
+                >
+                  {comment.likedByCurrentUser ? "❤️" : "🤍"}{" "}
+                  {comment.likeCount}
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </View>
+    ))
+  )}
+</ScrollView>
 
             <View style={styles.commentInputContainer}>
               <TextInput

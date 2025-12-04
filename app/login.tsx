@@ -16,7 +16,7 @@ const LoginComponent = () => {
     setSuccessMessage("");
     try {
       const response = await fetch(
-        "https://hovedopgave-mydish-production.up.railway.app/api/auth/login",
+        "https://hovedopgave-mydish-production.up.railway.app/api/users/login",
         {
           method: "POST",
           headers: {
@@ -47,11 +47,12 @@ const LoginComponent = () => {
         await AsyncStorage.setItem("jwtToken", data.token);
       }
 
-      if (data.userId || data.id) {
-        await AsyncStorage.setItem("userId", String(data.userId || data.id));
+      if (data.userId) {
+        await AsyncStorage.setItem("userId", String(data.userId));
       }
-      if (data.username || username) {
-        await AsyncStorage.setItem("username", data.username || username);
+      
+      if (data.userName) {
+        await AsyncStorage.setItem("username", data.userName);
       }
 
       setSuccessMessage("Logged in successfully!");

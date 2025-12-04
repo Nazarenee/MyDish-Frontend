@@ -54,7 +54,11 @@ export default StyleSheet.create({
     fontSize: 16,
     color: "#fff",
     fontWeight: "500",
-  },
+  },profileImage: {
+  width: '100%',
+  height: '100%',
+  borderRadius: 20,
+},
   sidebarSpacer: {
     flex: 1,
   },
