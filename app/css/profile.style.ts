@@ -49,6 +49,22 @@ const styles = StyleSheet.create({
     borderWidth: 3,
     borderColor: "#1a8fe3",
   },
+  profileImagePlaceholder: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: 20,
+    borderWidth: 3,
+    borderColor: "#ddd",
+    backgroundColor: "#f0f0f0",
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  placeholderText: {
+    color: "#999",
+    fontSize: 14,
+    fontWeight: "600",
+  },
   section: {
     backgroundColor: "#fff",
     padding: 20,
@@ -66,7 +82,18 @@ const styles = StyleSheet.create({
     color: "#666",
     marginBottom: 15,
     fontStyle: "italic",
-  },
+  },successContainer: {
+  backgroundColor: "#e6f7e6",
+  padding: 12,
+  borderRadius: 8,
+  marginBottom: 15,
+},
+successText: {
+  color: "#2e7d32",
+  fontSize: 14,
+  textAlign: "center",
+  fontWeight: "600",
+},
   label: {
     fontSize: 16,
     fontWeight: "600",

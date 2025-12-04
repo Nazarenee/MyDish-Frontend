@@ -17,7 +17,7 @@ import styles from "./css/profile.style";
 
 interface UserProfile {
   userId: number;
-  userName: string;
+  username: string; 
   profileImage: string;
 }
 
@@ -32,7 +32,8 @@ const ProfileComponent = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [profileImageUrl, setProfileImageUrl] = useState("");
 
-  const [validationError, setValidationError] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     fetchProfile();
@@ -65,9 +66,11 @@ const ProfileComponent = () => {
       }
 
       const data = await response.json();
+      console.log("Profile data received:", data);
+      
       setProfile(data);
-      setUsername(data.userName);
-      setProfileImageUrl(data.profileImage);
+      setUsername(data.username || "");  
+      setProfileImageUrl(data.profileImage || "");
     } catch (err) {
       console.error("Error fetching profile:", err);
       Alert.alert("Error", "Failed to load profile");
@@ -77,20 +80,64 @@ const ProfileComponent = () => {
   };
 
   const handleUpdateProfile = async () => {
-    setValidationError("");
+    setErrorMessage("");
+    setSuccessMessage("");
 
-    if (!username.trim()) {
-      setValidationError("Username cannot be empty");
+    if (!profile) {
+      setErrorMessage("Profile data not loaded");
       return;
     }
 
-    if (newPassword && newPassword !== confirmPassword) {
-      setValidationError("New passwords do not match");
+    const usernameChanged = username.trim() !== profile.username;  
+    const profileImageChanged = profileImageUrl.trim() !== (profile.profileImage || "");
+    const isChangingPassword = !!(newPassword && currentPassword);
+
+    console.log("usernameChanged:", usernameChanged);
+    console.log("profileImageChanged:", profileImageChanged);
+    console.log("isChangingPassword:", isChangingPassword);
+
+    if (usernameChanged) {
+      if (!username || !username.trim()) {
+        setErrorMessage("Username cannot be empty");
+        return;
+      }
+
+      if (username.trim().length < 3 || username.trim().length > 50) {
+        setErrorMessage("Username must be between 3 and 50 characters");
+        return;
+      }
+    }
+
+    if (isChangingPassword) {
+      if (!newPassword.trim()) {
+        setErrorMessage("New password cannot be empty");
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        setErrorMessage("New passwords do not match");
+        return;
+      }
+
+      const passwordPattern = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[A-Za-z\d]{8,}$/;
+      if (!passwordPattern.test(newPassword)) {
+        setErrorMessage(
+          "Password must be at least 8 characters and contain 1 uppercase, 1 lowercase, and 1 digit"
+        );
+        return;
+      }
+
+      if (!currentPassword || !currentPassword.trim()) {
+        setErrorMessage("Current password is required to change password");
+        return;
+      }
+    } else if (currentPassword && !newPassword) {
+      setErrorMessage("Please enter a new password or leave current password blank");
       return;
     }
 
-    if (newPassword && newPassword.length < 6) {
-      setValidationError("Password must be at least 6 characters");
+    if (!usernameChanged && !profileImageChanged && !isChangingPassword) {
+      setErrorMessage("No changes to save");
       return;
     }
 
@@ -102,18 +149,26 @@ const ProfileComponent = () => {
 
       if (!token || !userId) {
         Alert.alert("Error", "Please log in.");
+        setUpdating(false);
         return;
       }
 
-      const updateData: any = {
-        userName: username,
-        profileImage: profileImageUrl,
-      };
+      const updateData: any = {};
 
-      if (newPassword) {
+      if (usernameChanged) {
+        updateData.username = username.trim(); 
+      }
+
+      if (profileImageChanged) {
+        updateData.profileImage = profileImageUrl.trim() || "";
+      }
+
+      if (isChangingPassword) {
         updateData.currentPassword = currentPassword;
         updateData.newPassword = newPassword;
       }
+
+      console.log("Update request body:", JSON.stringify(updateData, null, 2));
 
       const response = await fetch(
         `https://hovedopgave-mydish-production.up.railway.app/api/users/${userId}`,
@@ -127,21 +182,70 @@ const ProfileComponent = () => {
         }
       );
 
+      console.log("Response status:", response.status);
+
       if (!response.ok) {
-        const errorText = await response.text();
-        throw new Error(errorText || "Failed to update profile");
+        let errorMsg = "Failed to update profile";
+        
+        try {
+          const errorData = await response.json();
+          
+          if (errorData.userName) {
+            errorMsg = errorData.userName;
+          } else if (errorData.username) {
+            errorMsg = errorData.username;
+          } else if (errorData.password) {
+            errorMsg = errorData.password;
+          } else if (errorData.message) {
+            errorMsg = errorData.message;
+          } else if (errorData.error) {
+            errorMsg = errorData.error;
+          }
+          
+          if (response.status === 400 && errorMsg.includes("Bad Request")) {
+            errorMsg = "Current password is incorrect";
+          }
+        } catch (parseError) {
+          if (response.status === 400) {
+            errorMsg = "Current password is incorrect or invalid data provided";
+          } else if (response.status === 409) {
+            errorMsg = "Username already exists";
+          } else if (response.status === 403) {
+            errorMsg = "You don't have permission to update this profile";
+          } else {
+            errorMsg = response.statusText || errorMsg;
+          }
+        }
+        
+        setErrorMessage(errorMsg);
+        return;
       }
 
-      await AsyncStorage.setItem("username", username);
+      const data = await response.json();
+console.log("Success response:", JSON.stringify(data, null, 2));
 
-      Alert.alert("Success", "Profile updated successfully!");
-      setCurrentPassword("");
-      setNewPassword("");
-      setConfirmPassword("");
-      fetchProfile();
+if (usernameChanged) {
+  if (data.username) {
+    await AsyncStorage.setItem("username", data.username);
+  }
+  
+  if (data.token) {
+    await AsyncStorage.setItem("jwtToken", data.token);
+    console.log("New token stored after username change");
+  }
+}
+
+setSuccessMessage("Profile updated successfully!");
+setCurrentPassword("");
+setNewPassword("");
+setConfirmPassword("");
+
+setTimeout(() => {
+  fetchProfile();
+}, 500);
     } catch (err: any) {
       console.error("Error updating profile:", err);
-      Alert.alert("Error", err.message || "Failed to update profile");
+      setErrorMessage(err.message || "Network error. Please try again.");
     } finally {
       setUpdating(false);
     }
@@ -169,16 +273,22 @@ const ProfileComponent = () => {
 
           <ScrollView style={styles.formContainer}>
             <View style={styles.profileImageSection}>
-              <Image
-                source={{ uri: profileImageUrl }}
-                style={styles.profileImage}
-              />
+              {profileImageUrl ? (
+                <Image
+                  source={{ uri: profileImageUrl }}
+                  style={styles.profileImage}
+                />
+              ) : (
+                <View style={styles.profileImagePlaceholder}>
+                  <Text style={styles.placeholderText}>No Image</Text>
+                </View>
+              )}
               <Text style={styles.label}>Profile Image URL</Text>
               <TextInput
                 style={styles.input}
                 value={profileImageUrl}
                 onChangeText={setProfileImageUrl}
-                placeholder="Enter image URL"
+                placeholder="Enter image URL (optional)"
                 placeholderTextColor="#999"
               />
             </View>
@@ -195,6 +305,9 @@ const ProfileComponent = () => {
                 placeholderTextColor="#999"
                 autoCapitalize="none"
               />
+              <Text style={styles.helperText}>
+                You can update your username here
+              </Text>
             </View>
 
             <View style={styles.section}>
@@ -219,7 +332,7 @@ const ProfileComponent = () => {
                 style={styles.input}
                 value={newPassword}
                 onChangeText={setNewPassword}
-                placeholder="Enter new password"
+                placeholder="Enter new password (min 8 chars)"
                 placeholderTextColor="#999"
                 secureTextEntry
                 autoCapitalize="none"
@@ -237,9 +350,15 @@ const ProfileComponent = () => {
               />
             </View>
 
-            {validationError ? (
+            {errorMessage ? (
               <View style={styles.errorContainer}>
-                <Text style={styles.errorText}>{validationError}</Text>
+                <Text style={styles.errorText}>{errorMessage}</Text>
+              </View>
+            ) : null}
+
+            {successMessage ? (
+              <View style={styles.successContainer}>
+                <Text style={styles.successText}>{successMessage}</Text>
               </View>
             ) : null}
 
