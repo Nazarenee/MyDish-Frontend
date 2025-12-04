@@ -396,4 +396,48 @@ export default StyleSheet.create({
     fontWeight: "600",
     fontSize: 14,
   },
+  commentFooter: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginTop: 8,
+  },
+  commentLikeButton: {
+    padding: 4,
+  },
+  commentLikeText: {
+    fontSize: 12,
+    color: "#666",
+  },
+  commentLikeTextActive: {
+    color: "#e74c3c",
+    fontWeight: "600",
+  },
+  toggleContainer: {
+    flexDirection: "row",
+    backgroundColor: "#f0f0f0",
+    borderRadius: 8,
+    padding: 4,
+    marginTop: 12,
+    gap: 4,
+  },
+  toggleButton: {
+    flex: 1,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 6,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  toggleButtonActive: {
+    backgroundColor: "#1a8fe3",
+  },
+  toggleButtonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#666",
+  },
+  toggleButtonTextActive: {
+    color: "#fff",
+  },
 });

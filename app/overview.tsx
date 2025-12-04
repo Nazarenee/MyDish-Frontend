@@ -28,6 +28,8 @@ interface Comment {
   userName: string;
   userId: number;
   created: string;
+  likeCount: number;
+  likedByCurrentUser: boolean;
 }
 
 interface Recipe {
@@ -72,9 +74,12 @@ const OverviewComponent = () => {
   const [newComment, setNewComment] = useState("");
   const [postingComment, setPostingComment] = useState(false);
 
-  const fetchRecipes = async () => {
+  const [viewMode, setViewMode] = useState<"my" | "explore">("my");
+
+  const fetchRecipes = async (mode: "my" | "explore" = viewMode) => {
     try {
       const token = await AsyncStorage.getItem("jwtToken");
+      const userId = await AsyncStorage.getItem("userId");
 
       if (!token) {
         setError("No token found. Please log in.");
@@ -82,16 +87,18 @@ const OverviewComponent = () => {
         return;
       }
 
-      const response = await fetch(
-        "https://hovedopgave-mydish-production.up.railway.app/api/recipes",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const endpoint =
+        mode === "my"
+          ? `https://hovedopgave-mydish-production.up.railway.app/api/recipes/user/${userId}`
+          : "https://hovedopgave-mydish-production.up.railway.app/api/recipes";
+
+      const response = await fetch(endpoint, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -224,6 +231,80 @@ const OverviewComponent = () => {
     }
   };
 
+  const handleCommentLikeToggle = async (commentId: number) => {
+    try {
+      const token = await AsyncStorage.getItem("jwtToken");
+      const userId = await AsyncStorage.getItem("userId");
+
+      if (!token || !userId) {
+        Alert.alert("Error", "Please log in.");
+        return;
+      }
+
+      const comment = comments.find((c) => c.id === commentId);
+      if (!comment) return;
+
+      if (comment.likedByCurrentUser) {
+        const response = await fetch(
+          `https://hovedopgave-mydish-production.up.railway.app/api/likes/comment/${commentId}/user/${userId}`,
+          {
+            method: "DELETE",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (response.ok) {
+          setComments((prev) =>
+            prev.map((c) =>
+              c.id === commentId
+                ? {
+                    ...c,
+                    likeCount: c.likeCount - 1,
+                    likedByCurrentUser: false,
+                  }
+                : c
+            )
+          );
+        }
+      } else {
+        const response = await fetch(
+          "https://hovedopgave-mydish-production.up.railway.app/api/likes",
+          {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              commentId: commentId,
+              userId: parseInt(userId),
+            }),
+          }
+        );
+
+        if (response.ok) {
+          setComments((prev) =>
+            prev.map((c) =>
+              c.id === commentId
+                ? {
+                    ...c,
+                    likeCount: c.likeCount + 1,
+                    likedByCurrentUser: true,
+                  }
+                : c
+            )
+          );
+        }
+      }
+    } catch (err) {
+      console.error("Error toggling comment like:", err);
+      Alert.alert("Error", "Failed to update like");
+    }
+  };
+
   const handlePostComment = async () => {
     if (!newComment.trim() || !selectedRecipeId) return;
 
@@ -296,6 +377,12 @@ const OverviewComponent = () => {
     await AsyncStorage.removeItem("userId");
     await AsyncStorage.removeItem("username");
     router.replace("/login");
+  };
+
+  const handleViewModeChange = (mode: "my" | "explore") => {
+    setViewMode(mode);
+    setLoading(true);
+    fetchRecipes(mode);
   };
 
   const addIngredient = () => {
@@ -522,7 +609,10 @@ const OverviewComponent = () => {
       <SafeAreaView style={styles.container}>
         <View style={styles.centered}>
           <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity style={styles.button} onPress={fetchRecipes}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => fetchRecipes()}
+          >
             <Text style={styles.buttonText}>Retry</Text>
           </TouchableOpacity>
         </View>
@@ -562,7 +652,45 @@ const OverviewComponent = () => {
         </View>
         <View style={styles.content}>
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>My Dishes</Text>
+            <View>
+              <Text style={styles.headerTitle}>
+                {viewMode === "my" ? "My Dishes" : "Explore Dishes"}
+              </Text>
+              <View style={styles.toggleContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.toggleButton,
+                    viewMode === "my" && styles.toggleButtonActive,
+                  ]}
+                  onPress={() => handleViewModeChange("my")}
+                >
+                  <Text
+                    style={[
+                      styles.toggleButtonText,
+                      viewMode === "my" && styles.toggleButtonTextActive,
+                    ]}
+                  >
+                    My Dishes
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.toggleButton,
+                    viewMode === "explore" && styles.toggleButtonActive,
+                  ]}
+                  onPress={() => handleViewModeChange("explore")}
+                >
+                  <Text
+                    style={[
+                      styles.toggleButtonText,
+                      viewMode === "explore" && styles.toggleButtonTextActive,
+                    ]}
+                  >
+                    Explore Dishes
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
             <TouchableOpacity
               style={styles.button}
               onPress={() => setModalVisible(true)}
@@ -573,7 +701,11 @@ const OverviewComponent = () => {
 
           {recipes.length === 0 ? (
             <View style={styles.centered}>
-              <Text style={styles.emptyText}>No recipes found</Text>
+              <Text style={styles.emptyText}>
+                {viewMode === "my"
+                  ? "You haven't created any recipes yet"
+                  : "No recipes found"}
+              </Text>
             </View>
           ) : (
             <FlatList
@@ -636,9 +768,26 @@ const OverviewComponent = () => {
                         <Text style={styles.commentText}>
                           {comment.bodyText}
                         </Text>
-                        <Text style={styles.commentDate}>
-                          {new Date(comment.created).toLocaleDateString()}
-                        </Text>
+                        <View style={styles.commentFooter}>
+                          <Text style={styles.commentDate}>
+                            {new Date(comment.created).toLocaleDateString()}
+                          </Text>
+                          <TouchableOpacity
+                            style={styles.commentLikeButton}
+                            onPress={() => handleCommentLikeToggle(comment.id)}
+                          >
+                            <Text
+                              style={[
+                                styles.commentLikeText,
+                                comment.likedByCurrentUser &&
+                                  styles.commentLikeTextActive,
+                              ]}
+                            >
+                              {comment.likedByCurrentUser ? "❤️" : "🤍"}{" "}
+                              {comment.likeCount}
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
                       </View>
                     </View>
                   </View>
