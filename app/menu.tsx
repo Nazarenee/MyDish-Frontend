@@ -14,6 +14,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Sidebar from "./components/Sidebar";
 import styles from "./css/menu.style";
 
 interface RecipeDTO {
@@ -152,7 +153,7 @@ const MenuComponent = () => {
   };
 
   const handleRecipesPress = () => {
-    router.push("/overview");
+    router.push("/recipeOverview");
   };
 
   const handleViewModeChange = (mode: "my" | "explore") => {
@@ -336,35 +337,7 @@ const MenuComponent = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.mainContainer}>
-        <View style={styles.sidebar}>
-          <View style={styles.sidebarHeader}>
-            <Text style={styles.sidebarTitle}>My Dish</Text>
-          </View>
-
-          <TouchableOpacity
-            style={[styles.sidebarItem, styles.sidebarItemActive]}
-            onPress={() => {}}
-          >
-            <Text style={styles.sidebarIcon}>📋</Text>
-            <Text style={styles.sidebarText}>Menu</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={styles.sidebarItem}
-            onPress={handleRecipesPress}
-          >
-            <Text style={styles.sidebarIcon}>🍳</Text>
-            <Text style={styles.sidebarText}>Recipes</Text>
-          </TouchableOpacity>
-
-          <View style={styles.sidebarSpacer} />
-
-          <TouchableOpacity style={styles.sidebarItem} onPress={handleLogout}>
-            <Text style={styles.sidebarIcon}>🚪</Text>
-            <Text style={styles.sidebarText}>Log Out</Text>
-          </TouchableOpacity>
-        </View>
-
+      <Sidebar activePage="menu" />
         <View style={styles.content}>
           <View style={styles.header}>
             <View>

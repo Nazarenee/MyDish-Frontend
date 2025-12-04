@@ -16,6 +16,7 @@ import {
   View,
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
+import Sidebar from "./components/Sidebar";
 import styles from "./css/overview.style";
 interface RecipeImage {
   id: number;
@@ -638,33 +639,7 @@ const OverviewComponent = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.mainContainer}>
-        <View style={styles.sidebar}>
-          <View style={styles.sidebarHeader}>
-            <Text style={styles.sidebarTitle}>My Dish</Text>
-          </View>
-
-          <TouchableOpacity
-            style={styles.sidebarItem}
-            onPress={() => router.push("/menu")}
-          >
-            <Text style={styles.sidebarIcon}>📋</Text>
-            <Text style={styles.sidebarText}>Menu</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.sidebarItem, styles.sidebarItemActive]}
-          >
-            <Text style={styles.sidebarIcon}>🍳</Text>
-            <Text style={styles.sidebarText}>Recipes</Text>
-          </TouchableOpacity>
-
-          <View style={styles.sidebarSpacer} />
-
-          <TouchableOpacity style={styles.sidebarItem} onPress={handleLogout}>
-            <Text style={styles.sidebarIcon}>🚪</Text>
-            <Text style={styles.sidebarText}>Log Out</Text>
-          </TouchableOpacity>
-        </View>
+      <Sidebar activePage="recipes" />
         <View style={styles.content}>
           <View style={styles.header}>
             <View>

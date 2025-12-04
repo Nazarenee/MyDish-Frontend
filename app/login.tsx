@@ -56,7 +56,7 @@ const LoginComponent = () => {
 
       setSuccessMessage("Logged in successfully!");
 
-      router.replace("/overview");
+      router.replace("/recipeOverview");
     } catch (error) {
       setErrorMessage("Network error. Try again later.");
     }
