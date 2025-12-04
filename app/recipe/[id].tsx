@@ -46,6 +46,7 @@ const RecipeDetailPage = () => {
   const [recipe, setRecipe] = useState<RecipeDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
+  const [deleting, setDeleting] = useState(false);
 
   const fetchRecipeDetail = async () => {
     try {
@@ -91,6 +92,46 @@ const RecipeDetailPage = () => {
   useEffect(() => {
     fetchRecipeDetail();
   }, [id]);
+
+  const handleDeleteRecipe = async () => {
+    try {
+      setDeleting(true);
+      const token = await AsyncStorage.getItem("jwtToken");
+
+      if (!token) {
+        setError("No token found. Please log in.");
+        router.replace("/login");
+        return;
+      }
+
+      const response = await fetch(
+        `https://hovedopgave-mydish-production.up.railway.app/api/recipes/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        if (response.status === 401) {
+          setError("Session expired. Please log in again.");
+          await AsyncStorage.removeItem("jwtToken");
+          router.replace("/login");
+          return;
+        }
+        throw new Error("Failed to delete recipe");
+      }
+
+      router.replace("/overview");
+    } catch (err) {
+      setError("Failed to delete recipe. Please try again.");
+    } finally {
+      setDeleting(false);
+    }
+  };
 
   if (loading) {
     return (
@@ -213,6 +254,18 @@ const RecipeDetailPage = () => {
           <Text style={styles.dateText}>
             Created: {new Date(recipe.createdAt).toLocaleDateString()}
           </Text>
+
+          <TouchableOpacity
+            style={styles.deleteButton}
+            onPress={handleDeleteRecipe}
+            disabled={deleting}
+          >
+            {deleting ? (
+              <ActivityIndicator color="#fff" />
+            ) : (
+              <Text style={styles.deleteButtonText}>Delete Recipe</Text>
+            )}
+          </TouchableOpacity>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -391,6 +444,20 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   backButtonText: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  deleteButton: {
+    backgroundColor: "#dc3545",
+    paddingVertical: 14,
+    paddingHorizontal: 24,
+    borderRadius: 8,
+    marginTop: 24,
+    marginBottom: 16,
+    alignItems: "center",
+  },
+  deleteButtonText: {
     color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
