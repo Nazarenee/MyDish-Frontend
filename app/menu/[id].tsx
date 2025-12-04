@@ -42,6 +42,16 @@ const MenuDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+    
+
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const userId = await AsyncStorage.getItem("userId");
+      setCurrentUserId(userId);
+    };
+    getCurrentUser();
+  }, []);
 
   const fetchMenuDetail = async () => {
     try {
@@ -158,6 +168,7 @@ const MenuDetailPage = () => {
       </SafeAreaView>
     );
   }
+const isAuthor = currentUserId && menu.authorId === parseInt(currentUserId);
 
   return (
     <SafeAreaView style={styles.container}>
@@ -239,6 +250,7 @@ const MenuDetailPage = () => {
               })
             )}
           </View>
+          {isAuthor && (
           <TouchableOpacity
             style={styles.deleteButton}
             onPress={handleDeleteMenu}
@@ -250,6 +262,7 @@ const MenuDetailPage = () => {
               <Text style={styles.deleteButtonText}>Delete Menu</Text>
             )}
           </TouchableOpacity>
+        )}
         </View>
       </ScrollView>
     </SafeAreaView>
