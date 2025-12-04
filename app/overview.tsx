@@ -1,4 +1,5 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Picker } from "@react-native-picker/picker";
 import { router } from "expo-router";
 import { useEffect, useState } from "react";
 import {
@@ -16,7 +17,6 @@ import {
 } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import styles from "./css/overview.style";
-
 interface RecipeImage {
   id: number;
   imageUrl: string;
@@ -51,6 +51,19 @@ interface Ingredient {
   averageCookingTime: string;
 }
 
+const UNIT_OPTIONS = [
+  { label: "Gram (g)", value: "GRAM" },
+  { label: "Kilogram (kg)", value: "KILOGRAM" },
+  { label: "Ounce (oz)", value: "OUNCE" },
+  { label: "Pound (lb)", value: "POUND" },
+  { label: "Milliliter (ml)", value: "MILLILITER" },
+  { label: "Liter (l)", value: "LITER" },
+  { label: "Deciliter (dl)", value: "DECILITER" },
+  { label: "Teaspoon (tsp)", value: "TEASPOON" },
+  { label: "Tablespoon (tbsp)", value: "TABLESPOON" },
+  { label: "Gallon", value: "GALLON" },
+];
+
 const OverviewComponent = () => {
   const [recipes, setRecipes] = useState<Recipe[]>([]);
   const [loading, setLoading] = useState(true);
@@ -73,6 +86,7 @@ const OverviewComponent = () => {
   const [loadingComments, setLoadingComments] = useState(false);
   const [newComment, setNewComment] = useState("");
   const [postingComment, setPostingComment] = useState(false);
+  const [validationError, setValidationError] = useState("");
 
   const [viewMode, setViewMode] = useState<"my" | "explore">("my");
 
@@ -187,10 +201,10 @@ const OverviewComponent = () => {
             prev.map((r) =>
               r.id === recipeId
                 ? {
-                    ...r,
-                    likeCount: r.likeCount - 1,
-                    likedByCurrentUser: false,
-                  }
+                  ...r,
+                  likeCount: r.likeCount - 1,
+                  likedByCurrentUser: false,
+                }
                 : r
             )
           );
@@ -216,10 +230,10 @@ const OverviewComponent = () => {
             prev.map((r) =>
               r.id === recipeId
                 ? {
-                    ...r,
-                    likeCount: r.likeCount + 1,
-                    likedByCurrentUser: true,
-                  }
+                  ...r,
+                  likeCount: r.likeCount + 1,
+                  likedByCurrentUser: true,
+                }
                 : r
             )
           );
@@ -261,10 +275,10 @@ const OverviewComponent = () => {
             prev.map((c) =>
               c.id === commentId
                 ? {
-                    ...c,
-                    likeCount: c.likeCount - 1,
-                    likedByCurrentUser: false,
-                  }
+                  ...c,
+                  likeCount: c.likeCount - 1,
+                  likedByCurrentUser: false,
+                }
                 : c
             )
           );
@@ -290,10 +304,10 @@ const OverviewComponent = () => {
             prev.map((c) =>
               c.id === commentId
                 ? {
-                    ...c,
-                    likeCount: c.likeCount + 1,
-                    likedByCurrentUser: true,
-                  }
+                  ...c,
+                  likeCount: c.likeCount + 1,
+                  likedByCurrentUser: true,
+                }
                 : c
             )
           );
@@ -449,18 +463,19 @@ const OverviewComponent = () => {
   };
 
   const handleCreateRecipe = async () => {
+    setValidationError("");
     if (!recipeName.trim()) {
-      Alert.alert("Error", "Please enter a recipe name");
+      setValidationError("Please enter a recipe name");
       return;
     }
     if (!recipeDescription.trim()) {
-      Alert.alert("Error", "Please enter a recipe description");
+      setValidationError("Please enter a recipe description");
       return;
     }
 
     const validIngredients = ingredients.filter((ing) => ing.name.trim());
     if (validIngredients.length === 0) {
-      Alert.alert("Error", "Please add at least one ingredient");
+      setValidationError("Please add at least one ingredient with a name");
       return;
     }
 
@@ -748,10 +763,6 @@ const OverviewComponent = () => {
             <ScrollView style={styles.commentsContainer}>
               {loadingComments ? (
                 <ActivityIndicator size="large" color="#1a8fe3" />
-              ) : comments.length === 0 ? (
-                <Text style={styles.noCommentsText}>
-                  No comments yet. Be the first to comment!
-                </Text>
               ) : (
                 comments.map((comment) => (
                   <View key={comment.id} style={styles.commentItem}>
@@ -780,7 +791,7 @@ const OverviewComponent = () => {
                               style={[
                                 styles.commentLikeText,
                                 comment.likedByCurrentUser &&
-                                  styles.commentLikeTextActive,
+                                styles.commentLikeTextActive,
                               ]}
                             >
                               {comment.likedByCurrentUser ? "❤️" : "🤍"}{" "}
@@ -808,7 +819,7 @@ const OverviewComponent = () => {
                 style={[
                   styles.sendButton,
                   (!newComment.trim() || postingComment) &&
-                    styles.sendButtonDisabled,
+                  styles.sendButtonDisabled,
                 ]}
                 onPress={handlePostComment}
                 disabled={!newComment.trim() || postingComment}
@@ -901,15 +912,23 @@ const OverviewComponent = () => {
                       keyboardType="numeric"
                     />
 
-                    <TextInput
-                      style={styles.input}
-                      value={ingredient.unit}
-                      onChangeText={(text) =>
-                        updateIngredient(index, "unit", text)
-                      }
-                      placeholder="Unit (e.g., GRAM)"
-                      placeholderTextColor="#999"
-                    />
+                    <View style={styles.pickerContainer}>
+                      <Picker
+                        selectedValue={ingredient.unit}
+                        onValueChange={(value) =>
+                          updateIngredient(index, "unit", value)
+                        }
+                        style={styles.picker}
+                      >
+                        {UNIT_OPTIONS.map((option) => (
+                          <Picker.Item
+                            key={option.value}
+                            label={option.label}
+                            value={option.value}
+                          />
+                        ))}
+                      </Picker>
+                    </View>
 
                     <TextInput
                       style={styles.input}
@@ -980,6 +999,11 @@ const OverviewComponent = () => {
 
               <Text style={styles.sectionTitle}>Images (Optional)</Text>
 
+              {validationError ? (
+                <View style={styles.errorContainer}>
+                  <Text style={styles.errorText}>{validationError}</Text>
+                </View>
+              ) : null}
               {imageUrls.map((imageUrl, index) => (
                 <View key={index} style={styles.ingredientRow}>
                   <View style={styles.ingredientInputs}>

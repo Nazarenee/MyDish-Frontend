@@ -171,11 +171,17 @@ export default StyleSheet.create({
     color: "#666",
   },
   errorText: {
-    fontSize: 16,
-    color: "red",
-    textAlign: "center",
-    marginBottom: 20,
-  },
+    color: '#c00',
+    fontSize: 14,
+    fontWeight: '500',
+  },errorContainer: {
+    backgroundColor: '#fee',
+    padding: 12,
+    borderRadius: 8,
+    marginBottom: 16,
+    borderLeftWidth: 4,
+    borderLeftColor: '#c00',
+},
   emptyText: {
     fontSize: 16,
     color: "#666",
@@ -186,7 +192,18 @@ export default StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
-  },
+  },pickerContainer: {
+  borderWidth: 1,
+  borderColor: '#ddd',
+  borderRadius: 8,
+  marginBottom: 12,
+  backgroundColor: '#fff',
+  overflow: 'hidden',
+},
+picker: {
+  height: 50,
+  width: '100%',
+},
   modalContent: {
     backgroundColor: "#fff",
     borderRadius: 16,
