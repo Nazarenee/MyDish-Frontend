@@ -193,8 +193,7 @@ export default StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },pickerContainer: {
-  borderWidth: 1,
-  borderColor: '#ddd',
+  borderWidth: 0,
   borderRadius: 8,
   marginBottom: 12,
   backgroundColor: '#fff',

@@ -35,7 +35,33 @@ export default StyleSheet.create({
   sidebarItemActive: {
     backgroundColor: "#34495e",
     borderLeftColor: "#1a8fe3",
-  },
+  },toggleContainer: {
+  flexDirection: "row",
+  gap: 8,
+  marginTop: 8,
+},cardAuthor: {
+  fontSize: 12,
+  color: "#666",
+  marginBottom: 8,
+  fontStyle: "italic",
+},
+toggleButton: {
+  paddingHorizontal: 16,
+  paddingVertical: 8,
+  borderRadius: 8,
+  backgroundColor: "#f0f0f0",
+},
+toggleButtonActive: {
+  backgroundColor: "#1a8fe3",
+},
+toggleButtonText: {
+  fontSize: 14,
+  color: "#666",
+  fontWeight: "500",
+},
+toggleButtonTextActive: {
+  color: "#fff",
+},
   sidebarIcon: {
     fontSize: 20,
     marginRight: 12,

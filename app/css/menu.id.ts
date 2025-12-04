@@ -27,6 +27,12 @@ export default StyleSheet.create({
   content: {
     padding: 16,
   },
+  cardAuthor: {
+  fontSize: 12,
+  color: "#666",
+  marginTop: 4,
+  fontStyle: "italic",
+},
   titleSection: {
     flexDirection: "row",
     alignItems: "center",

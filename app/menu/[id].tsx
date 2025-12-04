@@ -32,6 +32,7 @@ interface MenuDetail {
   name: string;
   description: string;
   authorId: number;
+  authorName: string;
   recipes: RecipeDTO[];
 }
 
@@ -172,13 +173,13 @@ const MenuDetailPage = () => {
 
         <View style={styles.content}>
           <View style={styles.titleSection}>
-            <Text style={styles.menuIcon}>📋</Text>
             <View style={styles.titleContent}>
               <Text style={styles.title}>{menu.name}</Text>
               <Text style={styles.recipeCount}>
                 {menu.recipes.length}{" "}
                 {menu.recipes.length === 1 ? "recipe" : "recipes"}
               </Text>
+              <Text style={styles.cardAuthor}>by {menu.authorName}</Text>
             </View>
           </View>
 

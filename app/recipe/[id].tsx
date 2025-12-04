@@ -47,6 +47,15 @@ const RecipeDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const getCurrentUser = async () => {
+      const userId = await AsyncStorage.getItem("userId");
+      setCurrentUserId(userId);
+    };
+    getCurrentUser();
+  }, []);
 
   const fetchRecipeDetail = async () => {
     try {
@@ -165,6 +174,8 @@ const RecipeDetailPage = () => {
       ? recipe.images[0].imageUrl
       : "https://via.placeholder.com/400x300?text=No+Image";
 
+  const isAuthor = currentUserId && recipe.authorId === parseInt(currentUserId);
+
   return (
     <SafeAreaView style={styles.container}>
       <ScrollView>
@@ -243,17 +254,19 @@ const RecipeDetailPage = () => {
             Created: {new Date(recipe.createdAt).toLocaleDateString()}
           </Text>
 
-          <TouchableOpacity
-            style={styles.deleteButton}
-            onPress={handleDeleteRecipe}
-            disabled={deleting}
-          >
-            {deleting ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.deleteButtonText}>Delete Recipe</Text>
-            )}
-          </TouchableOpacity>
+          {isAuthor && (
+            <TouchableOpacity
+              style={styles.deleteButton}
+              onPress={handleDeleteRecipe}
+              disabled={deleting}
+            >
+              {deleting ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.deleteButtonText}>Delete Recipe</Text>
+              )}
+            </TouchableOpacity>
+          )}
         </View>
       </ScrollView>
     </SafeAreaView>

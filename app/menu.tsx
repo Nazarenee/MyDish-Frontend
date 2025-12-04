@@ -27,6 +27,7 @@ interface Menu {
   name: string;
   description: string;
   authorId: number;
+  authorName: string;
   recipes: RecipeDTO[];
 }
 
@@ -42,10 +43,12 @@ const MenuComponent = () => {
   const [availableRecipes, setAvailableRecipes] = useState<RecipeDTO[]>([]);
   const [selectedRecipeIds, setSelectedRecipeIds] = useState<number[]>([]);
   const [loadingRecipes, setLoadingRecipes] = useState(false);
+  const [viewMode, setViewMode] = useState<"my" | "explore">("my");
 
-  const fetchMenus = async () => {
+  const fetchMenus = async (mode: "my" | "explore" = viewMode) => {
     try {
       const token = await AsyncStorage.getItem("jwtToken");
+      const userId = await AsyncStorage.getItem("userId");
 
       if (!token) {
         setError("No token found. Please log in.");
@@ -53,16 +56,18 @@ const MenuComponent = () => {
         return;
       }
 
-      const response = await fetch(
-        "https://hovedopgave-mydish-production.up.railway.app/api/menus",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const endpoint =
+        mode === "my"
+          ? `https://hovedopgave-mydish-production.up.railway.app/api/menus/user/${userId}`
+          : "https://hovedopgave-mydish-production.up.railway.app/api/menus";
+
+      const response = await fetch(endpoint, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
 
       if (!response.ok) {
         if (response.status === 401) {
@@ -148,6 +153,12 @@ const MenuComponent = () => {
 
   const handleRecipesPress = () => {
     router.push("/overview");
+  };
+
+  const handleViewModeChange = (mode: "my" | "explore") => {
+    setViewMode(mode);
+    setLoading(true);
+    fetchMenus(mode);
   };
 
   const toggleRecipeSelection = (recipeId: number) => {
@@ -247,6 +258,7 @@ const MenuComponent = () => {
             </Text>
           </View>
         </View>
+        <Text style={styles.cardAuthor}>by {item.authorName}</Text>
         <Text style={styles.cardDescription} numberOfLines={2}>
           {item.description || "No description available"}
         </Text>
@@ -313,7 +325,7 @@ const MenuComponent = () => {
       <SafeAreaView style={styles.container}>
         <View style={styles.centered}>
           <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity style={styles.retryButton} onPress={fetchMenus}>
+          <TouchableOpacity style={styles.retryButton} onPress={() => fetchMenus()}>     
             <Text style={styles.retryButtonText}>Retry</Text>
           </TouchableOpacity>
         </View>
@@ -355,7 +367,45 @@ const MenuComponent = () => {
 
         <View style={styles.content}>
           <View style={styles.header}>
-            <Text style={styles.headerTitle}>My Menus</Text>
+            <View>
+              <Text style={styles.headerTitle}>
+                {viewMode === "my" ? "My Menus" : "Explore Menus"}
+              </Text>
+              <View style={styles.toggleContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.toggleButton,
+                    viewMode === "my" && styles.toggleButtonActive,
+                  ]}
+                  onPress={() => handleViewModeChange("my")}
+                >
+                  <Text
+                    style={[
+                      styles.toggleButtonText,
+                      viewMode === "my" && styles.toggleButtonTextActive,
+                    ]}
+                  >
+                    My Menus
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.toggleButton,
+                    viewMode === "explore" && styles.toggleButtonActive,
+                  ]}
+                  onPress={() => handleViewModeChange("explore")}
+                >
+                  <Text
+                    style={[
+                      styles.toggleButtonText,
+                      viewMode === "explore" && styles.toggleButtonTextActive,
+                    ]}
+                  >
+                    Explore Menus
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
             <TouchableOpacity
               style={styles.createButton}
               onPress={() => setModalVisible(true)}
@@ -366,9 +416,15 @@ const MenuComponent = () => {
 
           {menus.length === 0 ? (
             <View style={styles.centered}>
-              <Text style={styles.emptyText}>No menus found</Text>
+              <Text style={styles.emptyText}>
+                {viewMode === "my"
+                  ? "You haven't created any menus yet"
+                  : "No menus found"}
+              </Text>
               <Text style={styles.emptySubtext}>
-                Create your first menu to get started!
+                {viewMode === "my"
+                  ? "Create your first menu to get started!"
+                  : ""}
               </Text>
             </View>
           ) : (
