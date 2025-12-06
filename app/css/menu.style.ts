@@ -1,4 +1,8 @@
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
+
+const { width } = Dimensions.get('window');
+const isSmallScreen = width < 768;
+
 export default StyleSheet.create({
   container: {
     flex: 1,
@@ -6,73 +10,7 @@ export default StyleSheet.create({
   },
   mainContainer: {
     flex: 1,
-    flexDirection: "row",
-  },
-  sidebar: {
-    width: 200,
-    backgroundColor: "#2c3e50",
-    paddingTop: 20,
-  },
-  sidebarHeader: {
-    paddingHorizontal: 20,
-    paddingBottom: 30,
-    borderBottomWidth: 1,
-    borderBottomColor: "#34495e",
-  },
-  sidebarTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#fff",
-  },
-  sidebarItem: {
-    flexDirection: "row",
-    alignItems: "center",
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    borderLeftWidth: 3,
-    borderLeftColor: "transparent",
-  },
-  sidebarItemActive: {
-    backgroundColor: "#34495e",
-    borderLeftColor: "#1a8fe3",
-  },toggleContainer: {
-  flexDirection: "row",
-  gap: 8,
-  marginTop: 8,
-},cardAuthor: {
-  fontSize: 12,
-  color: "#666",
-  marginBottom: 8,
-  fontStyle: "italic",
-},
-toggleButton: {
-  paddingHorizontal: 16,
-  paddingVertical: 8,
-  borderRadius: 8,
-  backgroundColor: "#f0f0f0",
-},
-toggleButtonActive: {
-  backgroundColor: "#1a8fe3",
-},
-toggleButtonText: {
-  fontSize: 14,
-  color: "#666",
-  fontWeight: "500",
-},
-toggleButtonTextActive: {
-  color: "#fff",
-},
-  sidebarIcon: {
-    fontSize: 20,
-    marginRight: 12,
-  },
-  sidebarText: {
-    fontSize: 16,
-    color: "#fff",
-    fontWeight: "500",
-  },
-  sidebarSpacer: {
-    flex: 1,
+    flexDirection: isSmallScreen ? "column" : "row",
   },
   content: {
     flex: 1,
@@ -88,28 +26,57 @@ toggleButtonTextActive: {
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#e0e0e0",
-    flexDirection: "row",
+    flexDirection: isSmallScreen ? "column" : "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: isSmallScreen ? "stretch" : "center",
+    gap: isSmallScreen ? 12 : 0,
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: isSmallScreen ? 20 : 24,
     fontWeight: "bold",
     color: "#333",
+  },
+  toggleContainer: {
+    flexDirection: "row",
+    backgroundColor: "#f0f0f0",
+    borderRadius: 8,
+    padding: 4,
+    marginTop: 12,
+    gap: 4,
+  },
+  toggleButton: {
+    flex: 1,
+    paddingVertical: 8,
+    paddingHorizontal: isSmallScreen ? 12 : 16,
+    borderRadius: 6,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  toggleButtonActive: {
+    backgroundColor: "#1a8fe3",
+  },
+  toggleButtonText: {
+    fontSize: isSmallScreen ? 12 : 14,
+    fontWeight: "600",
+    color: "#666",
+  },
+  toggleButtonTextActive: {
+    color: "#fff",
   },
   createButton: {
     backgroundColor: "#1a8fe3",
     paddingHorizontal: 20,
     paddingVertical: 10,
     borderRadius: 8,
+    alignItems: "center",
   },
   createButtonText: {
     color: "#fff",
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 14,
+    fontWeight: "600",
   },
   list: {
-    padding: 16,
+    padding: isSmallScreen ? 8 : 16,
   },
   card: {
     backgroundColor: "#fff",
@@ -129,7 +96,7 @@ toggleButtonTextActive: {
     marginBottom: 8,
   },
   cardTitle: {
-    fontSize: 20,
+    fontSize: isSmallScreen ? 18 : 20,
     fontWeight: "bold",
     color: "#333",
     flex: 1,
@@ -144,6 +111,12 @@ toggleButtonTextActive: {
     color: "#fff",
     fontSize: 12,
     fontWeight: "600",
+  },
+  cardAuthor: {
+    fontSize: 12,
+    color: "#666",
+    marginBottom: 8,
+    fontStyle: "italic",
   },
   cardDescription: {
     fontSize: 14,
@@ -213,11 +186,13 @@ toggleButtonTextActive: {
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
+    padding: isSmallScreen ? 16 : 0,
   },
   modalContent: {
     backgroundColor: "#fff",
     borderRadius: 16,
-    width: "90%",
+    width: isSmallScreen ? "100%" : "90%",
+    maxWidth: isSmallScreen ? undefined : 600,
     maxHeight: "90%",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
@@ -229,12 +204,12 @@ toggleButtonTextActive: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 20,
+    padding: isSmallScreen ? 16 : 20,
     borderBottomWidth: 1,
     borderBottomColor: "#e0e0e0",
   },
   modalTitle: {
-    fontSize: 24,
+    fontSize: isSmallScreen ? 18 : 24,
     fontWeight: "bold",
     color: "#333",
   },
@@ -246,15 +221,15 @@ toggleButtonTextActive: {
     color: "#999",
   },
   modalBody: {
-    padding: 20,
+    padding: isSmallScreen ? 16 : 20,
     maxHeight: 500,
   },
   label: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "600",
     color: "#333",
     marginBottom: 8,
-    marginTop: 16,
+    marginTop: 12,
   },
   input: {
     backgroundColor: "#f5f5f5",
@@ -270,10 +245,10 @@ toggleButtonTextActive: {
     textAlignVertical: "top",
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "bold",
     color: "#333",
-    marginTop: 24,
+    marginTop: 20,
     marginBottom: 12,
   },
   loadingContainer: {
@@ -342,9 +317,10 @@ toggleButtonTextActive: {
   modalFooter: {
     flexDirection: "row",
     justifyContent: "space-between",
-    padding: 20,
+    padding: isSmallScreen ? 16 : 20,
     borderTopWidth: 1,
     borderTopColor: "#e0e0e0",
+    gap: 12,
   },
   buttonSecondary: {
     flex: 1,
@@ -352,15 +328,14 @@ toggleButtonTextActive: {
     borderWidth: 1,
     borderColor: "#1a8fe3",
     paddingVertical: 12,
-    paddingHorizontal: 24,
+    paddingHorizontal: isSmallScreen ? 16 : 24,
     borderRadius: 8,
-    marginRight: 12,
     alignItems: "center",
   },
   buttonSecondaryText: {
     color: "#1a8fe3",
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 14,
+    fontWeight: "600",
   },
   buttonDisabled: {
     opacity: 0.5,

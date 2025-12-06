@@ -5,27 +5,29 @@ const isSmallScreen = width < 768;
 
 export default StyleSheet.create({
   sidebar: {
-    width: isSmallScreen ? '80%' : 200,
+    width: isSmallScreen ? 70 : 200,
     backgroundColor: "#2c3e50",
     paddingTop: 20,
     height: '100%',
   },
   sidebarHeader: {
-    paddingHorizontal: 20,
-    paddingBottom: 30,
+    paddingHorizontal: isSmallScreen ? 8 : 20,
+    paddingBottom: isSmallScreen ? 20 : 30,
     borderBottomWidth: 1,
     borderBottomColor: "#34495e",
+    alignItems: 'center',
   },
   sidebarTitle: {
-    fontSize: 24,
+    fontSize: isSmallScreen ? 16 : 24,
     fontWeight: "bold",
     color: "#fff",
   },
   sidebarItem: {
-    flexDirection: "row",
+    flexDirection: isSmallScreen ? "column" : "row",
     alignItems: "center",
-    padding: 16,
-    paddingHorizontal: 20,
+    justifyContent: "center",
+    padding: isSmallScreen ? 12 : 16,
+    paddingHorizontal: isSmallScreen ? 8 : 20,
     borderLeftWidth: 3,
     borderLeftColor: "transparent",
   },
@@ -35,17 +37,18 @@ export default StyleSheet.create({
   },
   sidebarIcon: {
     fontSize: 20,
-    marginRight: 12,
+    marginRight: isSmallScreen ? 0 : 12,
+    marginBottom: isSmallScreen ? 4 : 0,
   },
   sidebarText: {
-    fontSize: 16,
+    fontSize: isSmallScreen ? 10 : 16,
     color: "#fff",
     fontWeight: "500",
+    textAlign: 'center',
   },
   sidebarSpacer: {
     flex: 1,
   },
-  // Mobile hamburger menu
   hamburger: {
     position: 'absolute',
     top: 16,

@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
   Alert,
+  Dimensions,
   FlatList,
   Image,
   Modal,
@@ -18,10 +19,14 @@ import {
 import { SafeAreaView } from "react-native-safe-area-context";
 import Sidebar from "./components/Sidebar";
 import styles from "./css/recipeoverview.style";
+
 interface RecipeImage {
   id: number;
   imageUrl: string;
 }
+
+const { width } = Dimensions.get('window');
+const isSmallScreen = width < 768;
 
 interface Comment {
   id: number;
