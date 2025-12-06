@@ -1,4 +1,7 @@
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
+
+const { width } = Dimensions.get('window');
+const isSmallScreen = width < 768;
 
 export default StyleSheet.create({
   container: {
@@ -7,7 +10,7 @@ export default StyleSheet.create({
   },
   mainContainer: {
     flex: 1,
-    flexDirection: "row",
+    flexDirection: isSmallScreen ? "column" : "row",
   },
   content: {
     flex: 1,
@@ -19,26 +22,26 @@ export default StyleSheet.create({
     padding: 20,
   },
   sidebar: {
-    width: 200,
+    width: isSmallScreen ? "100%" : 200,
     backgroundColor: "#2c3e50",
     paddingTop: 20,
   },
   sidebarHeader: {
-    paddingHorizontal: 20,
-    paddingBottom: 30,
+    paddingHorizontal: isSmallScreen ? 16 : 20,
+    paddingBottom: isSmallScreen ? 16 : 30,
     borderBottomWidth: 1,
     borderBottomColor: "#34495e",
   },
   sidebarTitle: {
-    fontSize: 24,
+    fontSize: isSmallScreen ? 20 : 24,
     fontWeight: "bold",
     color: "#fff",
   },
   sidebarItem: {
     flexDirection: "row",
     alignItems: "center",
-    padding: 16,
-    paddingHorizontal: 20,
+    padding: isSmallScreen ? 12 : 16,
+    paddingHorizontal: isSmallScreen ? 16 : 20,
     borderLeftWidth: 3,
     borderLeftColor: "transparent",
   },
@@ -51,14 +54,15 @@ export default StyleSheet.create({
     marginRight: 12,
   },
   sidebarText: {
-    fontSize: 16,
+    fontSize: isSmallScreen ? 14 : 16,
     color: "#fff",
     fontWeight: "500",
-  },profileImage: {
-  width: '100%',
-  height: '100%',
-  borderRadius: 20,
-},
+  },
+  profileImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 20,
+  },
   sidebarSpacer: {
     flex: 1,
   },
@@ -67,12 +71,13 @@ export default StyleSheet.create({
     padding: 16,
     borderBottomWidth: 1,
     borderBottomColor: "#e0e0e0",
-    flexDirection: "row",
+    flexDirection: isSmallScreen ? "column" : "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: isSmallScreen ? "stretch" : "center",
+    gap: isSmallScreen ? 12 : 0,
   },
   headerTitle: {
-    fontSize: 24,
+    fontSize: isSmallScreen ? 20 : 24,
     fontWeight: "bold",
     color: "#333",
   },
@@ -92,6 +97,7 @@ export default StyleSheet.create({
     padding: 10,
     paddingHorizontal: 16,
     borderRadius: 8,
+    alignItems: "center",
   },
   buttonText: {
     color: "#fff",
@@ -131,18 +137,19 @@ export default StyleSheet.create({
     padding: 8,
   },
   row: {
-    justifyContent: "space-between",
+    justifyContent: isSmallScreen ? "center" : "space-between",
   },
   card: {
     backgroundColor: "#fff",
     borderRadius: 12,
     margin: 8,
-    flex: 1,
-    maxWidth: "48%",
+    flex: isSmallScreen ? 0 : 1,
+    width: isSmallScreen ? width - 32 : undefined,
+    maxWidth: isSmallScreen ? "100%" : "48%",
   },
   cardImage: {
     width: "100%",
-    height: 150,
+    height: isSmallScreen ? 200 : 150,
     borderTopLeftRadius: 12,
     borderTopRightRadius: 12,
     backgroundColor: "#e0e0e0",
@@ -178,14 +185,15 @@ export default StyleSheet.create({
     color: '#c00',
     fontSize: 14,
     fontWeight: '500',
-  },errorContainer: {
+  },
+  errorContainer: {
     backgroundColor: '#fee',
     padding: 12,
     borderRadius: 8,
     marginBottom: 16,
     borderLeftWidth: 4,
     borderLeftColor: '#c00',
-},
+  },
   emptyText: {
     fontSize: 16,
     color: "#666",
@@ -196,33 +204,36 @@ export default StyleSheet.create({
     backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
-  },pickerContainer: {
-  borderWidth: 0,
-  borderRadius: 8,
-  marginBottom: 12,
-  backgroundColor: '#fff',
-  overflow: 'hidden',
-},
-picker: {
-  height: 50,
-  width: '100%',
-},
+    padding: isSmallScreen ? 16 : 0,
+  },
+  pickerContainer: {
+    borderWidth: 0,
+    borderRadius: 8,
+    marginBottom: 12,
+    backgroundColor: '#fff',
+    overflow: 'hidden',
+  },
+  picker: {
+    height: 50,
+    width: '100%',
+  },
   modalContent: {
     backgroundColor: "#fff",
     borderRadius: 16,
-    width: "90%",
+    width: isSmallScreen ? "100%" : "90%",
+    maxWidth: isSmallScreen ? undefined : 600,
     maxHeight: "90%",
   },
   modalHeader: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 20,
+    padding: isSmallScreen ? 16 : 20,
     borderBottomWidth: 1,
     borderBottomColor: "#e0e0e0",
   },
   modalTitle: {
-    fontSize: 20,
+    fontSize: isSmallScreen ? 18 : 20,
     fontWeight: "bold",
     color: "#333",
   },
@@ -234,12 +245,12 @@ picker: {
     color: "#666",
   },
   modalBody: {
-    padding: 20,
+    padding: isSmallScreen ? 16 : 20,
   },
   modalFooter: {
     flexDirection: "row",
     justifyContent: "flex-end",
-    padding: 20,
+    padding: isSmallScreen ? 16 : 20,
     borderTopWidth: 1,
     borderTopColor: "#e0e0e0",
     gap: 12,
@@ -280,7 +291,6 @@ picker: {
     fontSize: 14,
     color: "#333",
   },
-
   sectionTitle: {
     fontSize: 16,
     fontWeight: "bold",
@@ -444,7 +454,7 @@ picker: {
   toggleButton: {
     flex: 1,
     paddingVertical: 8,
-    paddingHorizontal: 16,
+    paddingHorizontal: isSmallScreen ? 12 : 16,
     borderRadius: 6,
     alignItems: "center",
     justifyContent: "center",
@@ -453,7 +463,7 @@ picker: {
     backgroundColor: "#1a8fe3",
   },
   toggleButtonText: {
-    fontSize: 14,
+    fontSize: isSmallScreen ? 12 : 14,
     fontWeight: "600",
     color: "#666",
   },
