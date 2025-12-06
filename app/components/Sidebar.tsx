@@ -112,7 +112,6 @@ const Sidebar: React.FC<SidebarProps> = ({ activePage }) => {
     );
   }
 
-  // On desktop, show normal sidebar
   return <SidebarContent />;
 };
 
