@@ -3,6 +3,7 @@ import { router, useLocalSearchParams } from "expo-router";
 import { useEffect, useState } from "react";
 import {
   ActivityIndicator,
+  Alert,
   Image,
   ScrollView,
   Text,
@@ -47,7 +48,10 @@ const RecipeDetailPage = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [deleting, setDeleting] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+
 
   useEffect(() => {
     const getCurrentUser = async () => {
@@ -101,6 +105,63 @@ const RecipeDetailPage = () => {
   useEffect(() => {
     fetchRecipeDetail();
   }, [id]);
+
+  const handleSaveRecipe = async () => {
+  console.log('=== SAVE RECIPE DEBUG START ===');
+  try {
+    setSaving(true);
+    const token = await AsyncStorage.getItem("jwtToken");
+
+    if (!token) {
+      Alert.alert("Error", "No token found. Please log in.");
+      router.replace("/login");
+      return;
+    }
+
+    const response = await fetch(
+      `https://hovedopgave-mydish-production.up.railway.app/api/recipes/${id}/save`,
+      {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+
+    if (!response.ok) {
+      const responseText = await response.text();
+      
+      if (response.status === 401) {
+        Alert.alert("Error", "Session expired. Please log in again.");
+        await AsyncStorage.removeItem("jwtToken");
+        router.replace("/login");
+        return;
+      }
+      if (response.status === 400) {
+        try {
+          const errorData = JSON.parse(responseText);
+          Alert.alert("Error", errorData.message || "Cannot save your own recipe");
+        } catch (e) {
+          Alert.alert("Error", responseText || "Cannot save your own recipe");
+        }
+        return;
+      }
+      throw new Error(`Failed to save recipe: ${response.status} - ${responseText}`);
+    }
+    
+    setSaveSuccess(true);
+    
+
+    setTimeout(() => setSaveSuccess(false), 3000);
+    
+  } catch (err) {
+    Alert.alert("Error", `Failed to save recipe. Please try again.`);
+  } finally {
+    setSaving(false);
+  }
+};
 
   const handleDeleteRecipe = async () => {
     try {
@@ -254,6 +315,25 @@ const RecipeDetailPage = () => {
             Created: {new Date(recipe.createdAt).toLocaleDateString()}
           </Text>
 
+          {!isAuthor && (
+            <TouchableOpacity
+              style={styles.saveButton}
+              onPress={handleSaveRecipe}
+              disabled={saving}
+            >
+              {saving ? (
+                <ActivityIndicator color="#fff" />
+              ) : (
+                <Text style={styles.saveButtonText}>Save to My Dishes</Text>
+              )}
+            </TouchableOpacity>
+          )}
+          
+          {saveSuccess && (
+            <View style={styles.successMessage}>
+              <Text style={styles.successMessageText}>Recipe saved successfully!</Text>
+              </View>
+            )}
           {isAuthor && (
             <TouchableOpacity
               style={styles.deleteButton}

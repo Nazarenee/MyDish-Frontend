@@ -24,7 +24,31 @@ export default StyleSheet.create({
     fontSize: 16,
     color: "#1a8fe3",
     fontWeight: "600",
-  },
+  },saveButton: {
+  backgroundColor: "#686968ff",
+  paddingVertical: 15,
+  paddingHorizontal: 30,
+  borderRadius: 8,
+  alignItems: "center",
+  marginTop: 20,
+  marginBottom: 10,
+},successMessage: {
+  backgroundColor: '#4CAF50',
+  padding: 12,
+  borderRadius: 8,
+  marginBottom: 10,
+   alignItems: 'center',
+ },
+ successMessageText: {
+   color: '#fff',
+   fontSize: 16,
+   fontWeight: '600',
+ },
+saveButtonText: {
+  color: "#fff",
+  fontSize: 16,
+  fontWeight: "600",
+},
   mainImage: {
     width: "100%",
     height: 300,
