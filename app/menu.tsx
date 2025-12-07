@@ -93,40 +93,41 @@ const MenuComponent = () => {
   };
 
   const fetchAvailableRecipes = async () => {
-    setLoadingRecipes(true);
-    try {
-      const token = await AsyncStorage.getItem("jwtToken");
+  setLoadingRecipes(true);
+  try {
+    const token = await AsyncStorage.getItem("jwtToken");
+    const userId = await AsyncStorage.getItem("userId");
 
-      if (!token) {
-        Alert.alert("Error", "No token found. Please log in.");
-        router.replace("/login");
-        return;
-      }
-
-      const response = await fetch(
-        "https://hovedopgave-mydish-production.up.railway.app/api/recipes",
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      if (!response.ok) {
-        throw new Error("Failed to fetch recipes");
-      }
-
-      const data = await response.json();
-      setAvailableRecipes(data);
-    } catch (err) {
-      console.error("Error fetching recipes:", err);
-      Alert.alert("Error", "Failed to load recipes. Please try again.");
-    } finally {
-      setLoadingRecipes(false);
+    if (!token) {
+      Alert.alert("Error", "No token found. Please log in.");
+      router.replace("/login");
+      return;
     }
-  };
+
+    const response = await fetch(
+      `https://hovedopgave-mydish-production.up.railway.app/api/recipes/user/${userId}`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error("Failed to fetch recipes");
+    }
+
+    const data = await response.json();
+    setAvailableRecipes(data);
+  } catch (err) {
+    console.error("Error fetching recipes:", err);
+    Alert.alert("Error", "Failed to load recipes. Please try again.");
+  } finally {
+    setLoadingRecipes(false);
+  }
+};
 
   useEffect(() => {
     fetchMenus();
