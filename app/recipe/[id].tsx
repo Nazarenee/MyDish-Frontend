@@ -134,7 +134,7 @@ const RecipeDetailPage = () => {
         throw new Error("Failed to delete recipe");
       }
 
-      router.replace("/overview");
+      router.replace("/recipeOverview");
     } catch (err) {
       setError("Failed to delete recipe. Please try again.");
     } finally {
