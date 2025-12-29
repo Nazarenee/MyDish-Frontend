@@ -239,6 +239,17 @@ export default StyleSheet.create({
     padding: 12,
     fontSize: 16,
     color: "#333",
+  }, searchInput: {
+    borderWidth: 1,
+    borderColor: "#ddd",
+    borderRadius: 8,
+    padding: 12,
+    fontSize: 14,
+    color: "#333",
+    backgroundColor: "#fff",
+  }, searchBox: {
+    marginRight: 150,
+    marginTop: 5
   },
   textarea: {
     height: 100,

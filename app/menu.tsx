@@ -44,6 +44,7 @@ const MenuComponent = () => {
   const [availableRecipes, setAvailableRecipes] = useState<RecipeDTO[]>([]);
   const [selectedRecipeIds, setSelectedRecipeIds] = useState<number[]>([]);
   const [loadingRecipes, setLoadingRecipes] = useState(false);
+  const [searchValue, setSearchValue] = useState("");
   const [viewMode, setViewMode] = useState<"my" | "explore">("my");
 
   const fetchMenus = async (mode: "my" | "explore" = viewMode) => {
@@ -93,41 +94,41 @@ const MenuComponent = () => {
   };
 
   const fetchAvailableRecipes = async () => {
-  setLoadingRecipes(true);
-  try {
-    const token = await AsyncStorage.getItem("jwtToken");
-    const userId = await AsyncStorage.getItem("userId");
+    setLoadingRecipes(true);
+    try {
+      const token = await AsyncStorage.getItem("jwtToken");
+      const userId = await AsyncStorage.getItem("userId");
 
-    if (!token) {
-      Alert.alert("Error", "No token found. Please log in.");
-      router.replace("/login");
-      return;
-    }
-
-    const response = await fetch(
-      `https://hovedopgave-mydish-production.up.railway.app/api/recipes/user/${userId}`,
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
+      if (!token) {
+        Alert.alert("Error", "No token found. Please log in.");
+        router.replace("/login");
+        return;
       }
-    );
 
-    if (!response.ok) {
-      throw new Error("Failed to fetch recipes");
+      const response = await fetch(
+        `https://hovedopgave-mydish-production.up.railway.app/api/recipes/user/${userId}`,
+        {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch recipes");
+      }
+
+      const data = await response.json();
+      setAvailableRecipes(data);
+    } catch (err) {
+      console.error("Error fetching recipes:", err);
+      Alert.alert("Error", "Failed to load recipes. Please try again.");
+    } finally {
+      setLoadingRecipes(false);
     }
-
-    const data = await response.json();
-    setAvailableRecipes(data);
-  } catch (err) {
-    console.error("Error fetching recipes:", err);
-    Alert.alert("Error", "Failed to load recipes. Please try again.");
-  } finally {
-    setLoadingRecipes(false);
-  }
-};
+  };
 
   useEffect(() => {
     fetchMenus();
@@ -243,6 +244,12 @@ const MenuComponent = () => {
     }
   };
 
+  const displayedMenus = searchValue.trim() === ""
+    ? menus
+    : menus.filter((menu) =>
+      menu.name.toLowerCase().includes(searchValue.toLowerCase())
+    );
+
   const renderRecipeCard = ({ item }: { item: Menu }) => {
     return (
       <TouchableOpacity
@@ -327,7 +334,7 @@ const MenuComponent = () => {
       <SafeAreaView style={styles.container}>
         <View style={styles.centered}>
           <Text style={styles.errorText}>{error}</Text>
-          <TouchableOpacity style={styles.retryButton} onPress={() => fetchMenus()}>     
+          <TouchableOpacity style={styles.retryButton} onPress={() => fetchMenus()}>
             <Text style={styles.retryButtonText}>Retry</Text>
           </TouchableOpacity>
         </View>
@@ -338,7 +345,7 @@ const MenuComponent = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.mainContainer}>
-      <Sidebar activePage="menu" />
+        <Sidebar activePage="menu" />
         <View style={styles.content}>
           <View style={styles.header}>
             <View>
@@ -380,6 +387,14 @@ const MenuComponent = () => {
                 </TouchableOpacity>
               </View>
             </View>
+
+            <TextInput
+              style={[styles.searchInput, styles.searchBox]}
+              value={searchValue}
+              onChangeText={setSearchValue}
+              placeholder="Search"
+              placeholderTextColor="#999"
+            />
             <TouchableOpacity
               style={styles.createButton}
               onPress={() => setModalVisible(true)}
@@ -388,7 +403,7 @@ const MenuComponent = () => {
             </TouchableOpacity>
           </View>
 
-          {menus.length === 0 ? (
+          {displayedMenus.length === 0 ? (
             <View style={styles.centered}>
               <Text style={styles.emptyText}>
                 {viewMode === "my"
@@ -403,7 +418,7 @@ const MenuComponent = () => {
             </View>
           ) : (
             <FlatList
-              data={menus}
+              data={displayedMenus}
               renderItem={renderRecipeCard}
               keyExtractor={(item) => item.id.toString()}
               contentContainerStyle={styles.list}
