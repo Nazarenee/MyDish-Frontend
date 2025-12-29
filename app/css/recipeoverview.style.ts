@@ -271,6 +271,10 @@ export default StyleSheet.create({
     color: "#333",
     backgroundColor: "#fff",
   },
+  searchInput: {
+    marginRight: 150,
+    marginTop: 5
+  },
   textarea: {
     height: 100,
     textAlignVertical: "top",

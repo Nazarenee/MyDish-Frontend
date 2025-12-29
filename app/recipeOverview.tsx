@@ -80,6 +80,7 @@ const OverviewComponent = () => {
   const [creating, setCreating] = useState(false);
   const [recipeName, setRecipeName] = useState("");
   const [recipeDescription, setRecipeDescription] = useState("");
+  const [searchValue, setSearchValue] = useState("");
   const [enableComments, setEnableComments] = useState(true);
   const [ingredients, setIngredients] = useState<Ingredient[]>([
     { name: "", amount: "", unit: "GRAM", averageCookingTime: "" },
@@ -559,6 +560,12 @@ const OverviewComponent = () => {
     }
   };
 
+  const displayedRecipes = searchValue.trim() === ""
+  ? recipes
+  : recipes.filter((recipe) =>
+      recipe.name.toLowerCase().includes(searchValue.toLowerCase())
+    );
+
   const renderRecipeCard = ({ item }: { item: Recipe }) => {
     const imageUrl =
       item.images && item.images.length > 0
@@ -645,7 +652,7 @@ const OverviewComponent = () => {
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.mainContainer}>
-      <Sidebar activePage="recipes" />
+        <Sidebar activePage="recipes" />
         <View style={styles.content}>
           <View style={styles.header}>
             <View>
@@ -687,6 +694,14 @@ const OverviewComponent = () => {
                 </TouchableOpacity>
               </View>
             </View>
+
+              <TextInput
+                style={[styles.input, styles.searchInput]}
+                value={searchValue}
+                onChangeText={setSearchValue}
+                placeholder="Search"
+                placeholderTextColor="#999"
+              />
             <TouchableOpacity
               style={styles.button}
               onPress={() => setModalVisible(true)}
@@ -695,17 +710,17 @@ const OverviewComponent = () => {
             </TouchableOpacity>
           </View>
 
-          {recipes.length === 0 ? (
+          {displayedRecipes.length === 0 ? (
             <View style={styles.centered}>
               <Text style={styles.emptyText}>
-                {viewMode === "my"
+                {viewMode === "my" 
                   ? "You haven't created any recipes yet"
                   : "No recipes found"}
               </Text>
             </View>
           ) : (
             <FlatList
-              data={recipes}
+              data={displayedRecipes}
               renderItem={renderRecipeCard}
               keyExtractor={(item) => item.id.toString()}
               numColumns={2}
@@ -742,51 +757,51 @@ const OverviewComponent = () => {
             </View>
 
             <ScrollView style={styles.commentsContainer}>
-  {loadingComments ? (
-    <ActivityIndicator size="large" color="#1a8fe3" />
-  ) : (
-    comments.map((comment) => (
-      <View key={comment.id} style={styles.commentItem}>
-        <View style={styles.commentHeader}>
-          <View style={styles.profilePicture}>
-            <Image 
-              source={{ uri: comment.userProfileImage }} 
-              style={styles.profileImage}
-            />
-          </View>
-          <View style={styles.commentContent}>
-            <Text style={styles.commentUserName}>
-              {comment.userName}
-            </Text>
-            <Text style={styles.commentText}>
-              {comment.bodyText}
-            </Text>
-            <View style={styles.commentFooter}>
-              <Text style={styles.commentDate}>
-                {new Date(comment.created).toLocaleDateString()}
-              </Text>
-              <TouchableOpacity
-                style={styles.commentLikeButton}
-                onPress={() => handleCommentLikeToggle(comment.id)}
-              >
-                <Text
-                  style={[
-                    styles.commentLikeText,
-                    comment.likedByCurrentUser &&
-                    styles.commentLikeTextActive,
-                  ]}
-                >
-                  {comment.likedByCurrentUser ? "❤️" : "🤍"}{" "}
-                  {comment.likeCount}
-                </Text>
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </View>
-    ))
-  )}
-</ScrollView>
+              {loadingComments ? (
+                <ActivityIndicator size="large" color="#1a8fe3" />
+              ) : (
+                comments.map((comment) => (
+                  <View key={comment.id} style={styles.commentItem}>
+                    <View style={styles.commentHeader}>
+                      <View style={styles.profilePicture}>
+                        <Image
+                          source={{ uri: comment.userProfileImage }}
+                          style={styles.profileImage}
+                        />
+                      </View>
+                      <View style={styles.commentContent}>
+                        <Text style={styles.commentUserName}>
+                          {comment.userName}
+                        </Text>
+                        <Text style={styles.commentText}>
+                          {comment.bodyText}
+                        </Text>
+                        <View style={styles.commentFooter}>
+                          <Text style={styles.commentDate}>
+                            {new Date(comment.created).toLocaleDateString()}
+                          </Text>
+                          <TouchableOpacity
+                            style={styles.commentLikeButton}
+                            onPress={() => handleCommentLikeToggle(comment.id)}
+                          >
+                            <Text
+                              style={[
+                                styles.commentLikeText,
+                                comment.likedByCurrentUser &&
+                                styles.commentLikeTextActive,
+                              ]}
+                            >
+                              {comment.likedByCurrentUser ? "❤️" : "🤍"}{" "}
+                              {comment.likeCount}
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                ))
+              )}
+            </ScrollView>
 
             <View style={styles.commentInputContainer}>
               <TextInput
